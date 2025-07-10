@@ -1,0 +1,47 @@
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Pacient {
+  id               String          @id @default(uuid())
+  nombre           String
+  edad             Int
+  genero           String
+  vitalSigns       SignosVitales[]
+  sessions         Session[]
+  devices          Device[]
+}
+
+model SignosVitales {
+  id               String     @id @default(uuid())
+  patient          Pacient   @relation(fields: [patientId], references: [id])
+  patientId        String
+  session          Session?   @relation(fields: [sessionId], references: [id])
+  sessionId        String?
+  timestamp        DateTime   @default(now())
+  heartRate        Float?
+  informe          String?     @default("")
+}
+
+model Session {
+  id               String          @id @default(uuid())
+  patient          Pacient        @relation(fields: [patientId], references: [id])
+  patientId        String
+  startTime        DateTime        @default(now())
+  endTime          DateTime?
+  notes            String          @default("")
+  vitalSigns       SignosVitales[]
+}
+
+model Device {
+  id        String   @id @default(uuid())
+  deviceId  String   @unique
+  patient   Pacient  @relation(fields: [patientId], references: [id])
+  patientId String
+}

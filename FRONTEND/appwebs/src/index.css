@@ -1,0 +1,104 @@
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Fondo oscuro base */ 
+body {
+  background: #0a0f1c;
+  overflow-x: hidden;
+  overflow-y: auto;
+  color: white;
+  font-family: "Poppins", sans-serif;
+}
+
+/* Scrollbar moderno */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #71148a, #8ee1ef);
+  border-radius: 10px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #059669, #0891b2);
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+/* Scrollbar personalizado para componentes específicos */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 14px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  margin: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #be7bea, #06b6d4, #8b5cf6);
+  border-radius: 12px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #e092f0, #65bdd3, #7840d8);
+  transform: scale(1.05);
+}
+
+.custom-scrollbar::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Forzar scrollbar visible */
+html {
+  overflow-y: scroll;
+}
+
+body {
+  min-height: 100vh;
+}
+
+/* Aplicar Poppins a todo el contenido */
+* {
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Partículas */
+.particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background-color: #00ff88;
+  border-radius: 50%;
+  opacity: 0.3;
+  animation: float 6s infinite ease-in-out;
+}
+
+/* Animación flotante */
+@keyframes float {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 0.3;
+  }
+  50% {
+    transform: translateY(-30px) scale(1.4);
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 0.3;
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "name": "vitalcare-monitor",
+  "version": "2.0.0",
+  "description": "Sistema de monitoreo de signos vitales con ESP32 - Registro y seguimiento de pacientes",
+  "main": "src/server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "client": "cd client && npm start",
+    "server": "nodemon src/server.js",
+    "dev:fullstack": "concurrently \"npm run server\" \"npm run client\"",
+    "build:client": "cd client && npm run build",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:studio": "prisma studio",
+    "prisma:reset": "prisma migrate reset",
+    "prepare": "npm run prisma:generate",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint src"
+  },
+  "keywords": [
+    "healthcare",
+    "vital-signs",
+    "monitoring",
+    "esp32",
+    "medical",
+    "patient-management"
+  ],
+  "author": "Santiago Carranza",
+  "license": "ISC",
+  "dependencies": {
+    "@prisma/client": "^5.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^5.1.0",
+    "helmet": "^8.1.0",
+    "morgan": "^1.10.0",
+    "path": "^0.12.7",
+    "uuid": "^11.1.0",
+    "ws": "^8.18.3"
+  },
+  "devDependencies": {
+    "concurrently": "^8.0.1",
+    "nodemon": "^3.1.10",
+    "prisma": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "prisma": {
+    "schema": "prisma/schema.prisma"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SantiagoCarranza/vitalcare-monitor.git"
+  },
+  "bugs": {
+    "url": "https://github.com/SantiagoCarranza/vitalcare-monitor/issues"
+  },
+  "homepage": "https://github.com/SantiagoCarranza/vitalcare-monitor#readme"
+}
