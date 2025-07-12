@@ -6,6 +6,138 @@ import ControlPanel from '../pages/vitalmonitor/ControlPanel';
 import SessionInfo from '../pages/vitalmonitor/SessionInfo';
 import RealTimeChart from '../pages/vitalmonitor/RealTimeChart';
 
+// Copia de analizarPulso
+function analizarPulso(pulso) {
+  const numero = parseInt(pulso);
+  if (numero < 60) {
+    return {
+      estado: 'MALO',
+      color: 'red',
+      mensaje: 'Tu pulso está muy bajo. Deberías ir al doctor.',
+      consejos: ['Ve al doctor', 'No hagas ejercicio', 'Descansa']
+    };
+  } else if (numero <= 100) {
+    return {
+      estado: 'BIEN',
+      color: 'green',
+      mensaje: 'Tu pulso está normal. Estás bien!',
+      consejos: ['Sigue así', 'Haz ejercicio', 'Come saludable']
+    };
+  } else if (numero <= 150) {
+    return {
+      estado: 'REGULAR',
+      color: 'orange',
+      mensaje: 'Tu pulso está un poco alto. Ten cuidado.',
+      consejos: ['Relájate', 'Respira profundo', 'Toma agua']
+    };
+  } else {
+    return {
+      estado: 'MALO',
+      color: 'red',
+      mensaje: 'Tu pulso está muy alto! Ve al doctor YA!',
+      consejos: ['Llama al doctor', 'Siéntate', 'No te muevas mucho']
+    };
+  }
+}
+
+// Componente EstadoCard
+function EstadoCard({ estado, color, consejos }) {
+  const fondo = color === 'green' ? '#d4edda' : color === 'orange' ? '#fff3cd' : '#f8d7da';
+  const borde = color === 'green' ? '#c3e6cb' : color === 'orange' ? '#ffeaa7' : '#f5c6cb';
+  const texto = color === 'green' ? '#155724' : color === 'orange' ? '#856404' : '#721c24';
+  const icono = color === 'green' ? '✅' : color === 'orange' ? '⚠️' : '🚨';
+  return (
+    <div style={{marginTop:'10px',padding:'8px 12px',backgroundColor:fondo,borderRadius:'8px',border:`1px solid ${borde}`}}>
+      <div style={{fontSize:'14px',fontWeight:'bold',color:texto,display:'flex',alignItems:'center',gap:'5px'}}>
+        {icono} Estado: {estado}
+      </div>
+      {consejos && (
+        <div style={{marginTop:'8px',fontSize:'12px',backgroundColor:'rgba(255,255,255,0.1)',padding:'8px',borderRadius:'6px'}}>
+          <strong style={{color:'#666'}}>💡 Consejos:</strong>
+          <ul style={{margin:'5px 0',paddingLeft:'15px',color:'#555'}}>
+            {consejos.map((c,i)=><li key={i}>{c}</li>)}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Componente ChatMessage
+function ChatMessage({ mensaje }) {
+  return (
+    <div style={{ marginBottom: '15px' }}>
+      <div style={{
+        padding: '12px 16px',
+        borderRadius: '18px',
+        maxWidth: '85%',
+        backgroundColor: mensaje.usuario ? '#1aff8b' : '#23283a',
+        color: mensaje.usuario ? '#10151f' : '#fff',
+        marginLeft: mensaje.usuario ? 'auto' : '0',
+        marginRight: mensaje.usuario ? '0' : 'auto',
+        boxShadow: mensaje.usuario 
+          ? '0 4px 12px #1aff8b55' 
+          : '0 4px 12px #10151f33',
+        border: mensaje.usuario ? 'none' : '1px solid #1aff8b22',
+        fontSize: '15px'
+      }}>
+        {mensaje.texto}
+        {mensaje.estado && (
+          <EstadoCard estado={mensaje.estado} color={mensaje.color} consejos={mensaje.consejos} />
+        )}
+      </div>
+    </div>
+  );
+}
+
+// Componente InputArea
+function InputArea({ inputTexto, setInputTexto, presionarEnter, enviarMensaje }) {
+  return (
+    <div style={{ padding: '18px', borderTop: '1px solid #1aff8b22', backgroundColor: '#23283a' }}>
+      <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+        <input
+          type="text"
+          value={inputTexto}
+          onChange={(e) => setInputTexto(e.target.value)}
+          onKeyPress={presionarEnter}
+          placeholder="Escribe tu pulso..."
+          style={{
+            flex: '1',
+            padding: '10px 12px',
+            border: '2px solid #1aff8b33',
+            borderRadius: '18px',
+            fontSize: '14px',
+            outline: 'none',
+            background: '#181e2a',
+            color: '#fff',
+            transition: 'all 0.3s ease'
+          }}
+        />
+        <button
+          onClick={enviarMensaje}
+          style={{
+            padding: '10px 16px',
+            background: '#1aff8b',
+            color: '#10151f',
+            border: 'none',
+            borderRadius: '18px',
+            cursor: 'pointer',
+            fontSize: '14px',
+            fontWeight: 'bold',
+            boxShadow: '0 2px 8px #1aff8b33',
+            transition: 'transform 0.2s ease'
+          }}
+        >
+          📤 Enviar
+        </button>
+      </div>
+      <div style={{ textAlign: 'center', marginTop: '10px', fontSize: '12px', color: '#b6eada' }}>
+        💬 Ejemplo: "Mi pulso es 80" o solo "80"
+      </div>
+    </div>
+  );
+}
+
 const VitalMonitor = ({ patient }) => {
   const {
     vitals,
@@ -18,6 +150,7 @@ const VitalMonitor = ({ patient }) => {
   } = useVitalData(patient.id);
 
   const [notification, setNotification] = useState(null);
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   const latestVital = vitals.length > 0 ? vitals[vitals.length - 1] : null;
 
@@ -60,17 +193,142 @@ const VitalMonitor = ({ patient }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-6 relative overflow-y-auto custom-scrollbar">
-      {/* Efectos de fondo mejorados */}
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute inset-0 opacity-30 bg-gradient-to-br from-transparent via-emerald-400/5 to-transparent"></div>
-        <div className="absolute top-0 left-0 w-full h-full">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-emerald-400/10 to-cyan-400/10 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-gradient-to-r from-purple-400/10 to-pink-400/10 rounded-full blur-3xl"></div>
+    <div className="min-h-screen w-full flex flex-col justify-between items-center relative overflow-y-auto custom-scrollbar" style={{ background: 'radial-gradient(ellipse at 70% 10%, #181e2a 60%, #10151f 100%)' }}>
+      {/* Partículas decorativas */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <svg width="100%" height="100%" className="absolute inset-0" style={{ opacity: 0.18 }}>
+          {[...Array(80)].map((_, i) => (
+            <circle key={i} cx={Math.random()*100+'%'} cy={Math.random()*100+'%'} r={Math.random()*2+1} fill="#1aff8b" />
+          ))}
+        </svg>
+      </div>
+
+      {/* Header paciente */}
+      <div className="w-full max-w-5xl flex flex-row items-center justify-between bg-[#23283a]/80 backdrop-blur-xl rounded-2xl shadow-2xl px-10 py-2 mt-1 mb-1 border border-[#1aff8b]/20 z-10" style={{boxShadow:'0 8px 40px #1aff8b22'}}>
+        <div className="flex flex-row items-center gap-6">
+          <div className="w-20 h-20 rounded-2xl flex items-center justify-center bg-[#1aff8b]/20">
+            <span className="text-5xl text-[#1aff8b]"><i className="fas fa-user"></i></span>
+          </div>
+          <div className="flex flex-col">
+            <span className="text-2xl font-bold text-white leading-tight">{patient.nombre}</span>
+            <div className="flex flex-row gap-6 text-[#b6eada] text-lg mt-1">
+              <span><i className="fas fa-birthday-cake mr-1" />{patient.edad} años</span>
+              <span><i className="fas fa-venus-mars mr-1" />{patient.genero}</span>
+              <span><i className="fas fa-calendar-alt mr-1" />{new Date().toLocaleDateString()}</span>
+            </div>
+          </div>
+        </div>
+        <div className="flex flex-row items-center gap-3">
+          <span className={`w-4 h-4 rounded-full ${isMonitoring ? 'bg-[#1aff8b] animate-pulse' : 'bg-gray-400' }`}></span>
+          <span className={`font-semibold text-xl ${isMonitoring ? 'text-[#1aff8b]' : 'text-gray-400'}`}>{isMonitoring ? 'Monitoreando' : 'Detenido'}</span>
         </div>
       </div>
 
-      
+      {/* Main cards layout - Sin gap */}
+      <div className="w-full max-w-5xl flex flex-row justify-center items-stretch z-10 mb-1">
+        {/* Card BPM */}
+        <div className="flex-1 flex flex-col items-center justify-center bg-[#23283a]/80 backdrop-blur-xl rounded-l-2xl shadow-2xl border border-[#1aff8b]/20 border-r-0 px-2 py-6 min-w-[320px] max-w-[420px]" style={{boxShadow:'0 8px 40px #1aff8b22'}}>
+          <div className="text-8xl mb-2 animate-pulse">
+            <span role="img" aria-label="corazon" className="" style={{filter:'drop-shadow(0 2px 8px #1aff8b88)'}}>❤️</span>
+          </div>
+          <div className="text-7xl font-extrabold text-[#1aff8b] mb-1 tracking-wider">
+            {latestVital ? latestVital.heartRate : '--'}
+          </div>
+          <div className="text-[#b6eada] text-2xl tracking-widest">BPM</div>
+        </div>
+        {/* Card sesión */}
+        <div className="flex flex-col items-center justify-center bg-[#23283a]/80 backdrop-blur-xl rounded-r-2xl shadow-2xl border border-[#1aff8b]/20 px-10 py-6 min-w-[260px] max-w-[320px]" style={{boxShadow:'0 8px 40px #1aff8b22'}}>
+          <div className="flex flex-col items-center gap-4 w-full">
+            {/* Tiempo de sesión */}
+            <div className="flex flex-col items-center">
+              <div className="text-[#1aff8b] text-3xl font-bold mb-1">
+                {currentSession && currentSession.startTime ? (
+                  (() => {
+                    const start = new Date(currentSession.startTime);
+                    const end = currentSession.endTime ? new Date(currentSession.endTime) : new Date();
+                    const duration = Math.floor((end - start) / 1000);
+                    const h = String(Math.floor(duration / 3600)).padStart(2, '0');
+                    const m = String(Math.floor((duration % 3600) / 60)).padStart(2, '0');
+                    const s = String(duration % 60).padStart(2, '0');
+                    return `${h}:${m}:${s}`;
+                  })()
+                ) : '00:00:00'}
+              </div>
+              <div className="text-[#b6eada] text-lg">TIEMPO DE SESIÓN</div>
+            </div>
+            {/* Estado de conexión */}
+            <div className="flex flex-col items-center">
+              <div className={`text-2xl font-bold mb-1 ${isWsConnected ? 'text-[#1aff8b]' : 'text-[#ff4b7b]'}`}>{isWsConnected ? 'Conectado' : 'Desconectado'}</div>
+              <div className="text-[#b6eada] text-lg">ESTADO ESP32</div>
+            </div>
+            {/* Datos recopilados */}
+            <div className="flex flex-col items-center">
+              <div className="text-[#1aff8b] text-2xl font-bold mb-1">{vitals.length}</div>
+              <div className="text-[#b6eada] text-lg">DATOS RECOPILADOS</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Barra inferior de controles ultra compacta */}
+      <div className="w-full max-w-5xl flex flex-row items-center justify-center z-20 mt-1 mb-1">
+        <div className="flex flex-row items-center justify-center w-full bg-[#23283a]/80 backdrop-blur-xl border border-[#1aff8b]/20 rounded-2xl shadow-2xl px-3 py-1" style={{minHeight: '40px', boxShadow:'0 8px 40px #1aff8b22'}}>
+          <div className="flex flex-row gap-2 items-center w-full justify-center">
+            <ControlPanel
+              isMonitoring={isMonitoring}
+              onToggleMonitoring={handleToggleMonitoring}
+              patient={patient}
+              vitals={vitals}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Botón flotante de chat bot */}
+      {!isChatOpen && (
+        <button
+          className="fixed bottom-6 right-6 z-50 w-16 h-16 rounded-full bg-[#1aff8b] shadow-2xl flex items-center justify-center hover:bg-[#13c77b] transition-all duration-200 border-4 border-[#23283a]"
+          style={{boxShadow:'0 4px 32px #1aff8b55'}}
+          title="Abrir chat bot"
+          onClick={() => setIsChatOpen(true)}
+        >
+          <i className="fas fa-robot text-3xl text-[#10151f]"></i>
+        </button>
+      )}
+
+      {/* Modal flotante de chat bot */}
+      {isChatOpen && (
+        <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
+          <div
+            className="relative w-[320px] max-w-[90vw] h-[420px] max-h-[80vh] bg-[#23283a]/90 backdrop-blur-2xl border border-[#1aff8b]/40 shadow-xl rounded-2xl flex flex-col animate-fadeIn"
+            style={{boxShadow:'0 6px 32px #1aff8b33'}}
+          >
+            {/* Header del chat */}
+            <div className="flex items-center justify-between px-3 py-2 border-b border-[#1aff8b]/10 bg-[#23283a]/95 rounded-t-2xl">
+              <div className="flex items-center gap-2">
+                <i className="fas fa-robot text-lg text-[#1aff8b]"></i>
+                <span className="font-bold text-base text-white">Chat Bot</span>
+              </div>
+              <button onClick={() => setIsChatOpen(false)} className="text-[#1aff8b] hover:text-[#7f5fff] text-lg font-bold px-2 py-1 rounded transition-all" title="Cerrar">
+                ×
+              </button>
+            </div>
+            {/* Cuerpo del chat funcional */}
+            <ChatBotPanel />
+          </div>
+          <style>{`
+            .animate-fadeIn {
+              animation: fadeIn 0.3s cubic-bezier(.4,1.4,.6,1) both;
+            }
+            @keyframes fadeIn {
+              from { opacity: 0; transform: translateY(40px) scale(0.95); }
+              to { opacity: 1; transform: translateY(0) scale(1); }
+            }
+          `}</style>
+        </div>
+      )}
+
+      {/* Notificación */}
       <AnimatePresence>
         {notification && (
           <motion.div
@@ -91,253 +349,99 @@ const VitalMonitor = ({ patient }) => {
         )}
       </AnimatePresence>
 
-      {/* Contenido principal */}
-      <div className="relative z-10 max-w-7xl mx-auto">
-        {/* Header rediseñado */}
+      {/* Mensaje de error mejorado */}
+      {error && (
         <motion.div
-          initial={{ opacity: 0, y: -20 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white/10 backdrop-blur-xl rounded-3xl shadow-2xl p-8 mb-8 border border-white/20"
+          className="bg-red-500/20 backdrop-blur-xl border border-red-500/30 rounded-3xl p-8 mb-8 shadow-2xl max-w-2xl mx-auto z-30"
         >
-          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center">
-            <div className="flex items-center mb-6 lg:mb-0">
-              <div className="w-16 h-16 bg-gradient-to-br from-emerald-400 to-cyan-400 rounded-2xl flex items-center justify-center mr-6 shadow-lg shadow-emerald-500/20">
-                <span className="text-2xl">💓</span>
-              </div>
-              <div>
-                <h1 className="text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-red-400 to-red-600 mb-2 font-poppins">
-                  VitalCare Monitor
-                </h1>
-              </div>
+          <div className="flex items-center">
+            <div className="w-16 h-16 bg-red-500/30 rounded-2xl flex items-center justify-center mr-6">
+              <span className="text-3xl">⚠️</span>
             </div>
-            
-            <div className="flex items-center justify-end">
-              <motion.div
-                animate={{ scale: isWsConnected ? 1 : 0.95 }}
-                className={`flex items-center px-6 py-3 rounded-2xl backdrop-blur-sm ${
-                  isWsConnected 
-                    ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' 
-                    : 'bg-red-500/20 text-red-300 border border-red-500/30'
-                } transition-all duration-300`}
-              >
-                <div className={`w-3 h-3 rounded-full mr-3 ${
-                  isWsConnected ? 'bg-emerald-400 animate-pulse' : 'bg-red-400'
-                }`}></div>
-                <span className="font-semibold text-white">
-                  {isWsConnected ? 'Conectado' : 'Desconectado'}
-                </span>
-              </motion.div>
+            <div>
+              <h3 className="text-2xl font-bold text-red-300 mb-2 font-poppins">Error de Conexión</h3>
+              <p className="text-red-200 text-lg">{error}</p>
             </div>
           </div>
         </motion.div>
-
-        {/* Información del paciente rediseñada */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="bg-white/10 backdrop-blur-xl rounded-3xl shadow-2xl p-8 mb-8 border border-white/20"
-        >
-          <div className="flex flex-col items-center text-center">
-            <div className="w-20 h-20 bg-gradient-to-br from-purple-400 to-pink-400 rounded-3xl flex items-center justify-center mb-6 shadow-lg shadow-purple-500/20">
-              <span className="text-3xl">👨‍⚕️</span>
-            </div>
-            
-            <div className="w-full">
-              <h2 className="text-6xl font-bold mb-8 text-center bg-gradient-to-r from-[#B983FF] via-[#9F7BFF] to-[#8EC5FC] bg-clip-text text-transparent">
-                {patient.nombre}
-              </h2>
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="bg-white/5 rounded-2xl p-4 backdrop-blur-sm text-center">
-                  <div className="text-5xl font-black mb-2 p-4 rounded inline-block bg-gradient-to-r from-[#66E4FF] to-[#A0FFF9] bg-clip-text text-transparent">
-                    ID Paciente
-                  </div>
-                  <div className="text-white font-bold text-xl">{patient.id}</div>
-                </div>
-                <div className="bg-white/5 rounded-2xl p-4 backdrop-blur-sm text-center">
-                  <div className="text-5xl font-black mb-2 p-4 rounded inline-block bg-gradient-to-r from-[#66E4FF] to-[#A0FFF9] bg-clip-text text-transparent">
-                    Edad
-                  </div>
-                  <div className="text-white font-bold text-xl">{patient.edad} años</div>
-                </div>
-                <div className="bg-white/5 rounded-2xl p-4 backdrop-blur-sm text-center">
-                  <div className="text-5xl font-black mb-2 p-4 rounded inline-block bg-gradient-to-r from-[#66E4FF] to-[#A0FFF9] bg-clip-text text-transparent">
-                    Género
-                  </div>
-                  <div className="text-white font-bold text-xl">{patient.genero}</div>
-                </div>
-                <div className="bg-white/5 rounded-2xl p-4 backdrop-blur-sm text-center">
-                  <div className="text-5xl font-black mb-2 p-4 rounded inline-block bg-gradient-to-r from-[#66E4FF] to-[#A0FFF9] bg-clip-text text-transparent">
-                    Fecha
-                  </div>
-                  <div className="text-white font-bold text-xl">{new Date().toLocaleDateString()}</div>
-                </div>
-              </div>
-            </div>
-            
-            <div className="mt-6">
-              <div className="flex items-center justify-center bg-emerald-500/20 backdrop-blur-sm px-6 py-3 rounded-2xl border border-emerald-500/30">
-                <div className="w-4 h-4 bg-emerald-400 rounded-full mr-3 animate-pulse"></div>
-                <span className="text-emerald-300 font-medium text-lg">
-                  {isMonitoring ? 'Monitoreando' : 'Inactivo'}
-                </span>
-              </div>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Panel de control */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="mb-8"
-        >
-          <ControlPanel
-            isMonitoring={isMonitoring}
-            onToggleMonitoring={handleToggleMonitoring}
-            patient={patient}
-            vitals={vitals}
-          />
-        </motion.div>
-
-        {/* Grid principal mejorado */}
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-8 mb-8">
-          {/* Gráfico en tiempo real */}
-          <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.3 }}
-            className="xl:col-span-2"
-          >
-            <RealTimeChart
-              data={getFilteredVitals()}
-              isMonitoring={isMonitoring}
-            />
-          </motion.div>
-
-          {/* Tarjetas de signos vitales mejoradas */}
-          <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.4 }}
-            className="grid grid-cols-1 gap-6"
-          >
-            {latestVital ? (
-              <>
-                <VitalSignCard
-                  title="Frecuencia Cardíaca"
-                  value={latestVital.heartRate}
-                  unit="bpm"
-                  icon="❤️"
-                  status={getVitalStatus(latestVital.heartRate, 'heartRate')}
-                  timestamp={latestVital.timestamp}
-                  trend={vitals.length > 1 ? 
-                    (latestVital.heartRate > vitals[vitals.length - 2].heartRate ? 'up' : 'down') : 'stable'}
-                />
-                {/* Placeholder para más signos vitales */}
-              
-               
-              </>
-            ) : (
-              <div className="bg-white/5 backdrop-blur-xl rounded-3xl shadow-2xl p-8 border border-white/20 text-center">
-                <motion.div
-                  animate={{ scale: [1, 1.1, 1] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                  className="text-6xl text-emerald-400/50 mb-6"
-                >
-                  💓
-                </motion.div>
-                <h3 className="text-2xl font-bold text-white mb-4 font-poppins">Sin datos vitales</h3>
-                <p className="text-white text-lg mb-2">
-                  {isMonitoring ? 'Esperando datos del monitor...' : 'Inicia el monitoreo para ver los signos vitales'}
-                </p>
-                <div className="w-full bg-white/10 rounded-full h-2 mt-4">
-                  <div className="bg-gradient-to-r from-emerald-400 to-cyan-400 h-2 rounded-full animate-pulse" style={{width: '30%'}}></div>
-                </div>
-              </div>
-            )}
-          </motion.div>
-        </div>
-
-        {/* Información de sesión */}
-        {currentSession && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="mb-8"
-          >
-            <SessionInfo session={currentSession} />
-          </motion.div>
-        )}
-
-        {/* Mensaje de error mejorado */}
-        {error && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-red-500/20 backdrop-blur-xl border border-red-500/30 rounded-3xl p-8 mb-8 shadow-2xl"
-          >
-            <div className="flex items-center">
-              <div className="w-16 h-16 bg-red-500/30 rounded-2xl flex items-center justify-center mr-6">
-                <span className="text-3xl">⚠️</span>
-              </div>
-              <div>
-                <h3 className="text-2xl font-bold text-red-300 mb-2 font-poppins">Error de Conexión</h3>
-                <p className="text-red-200 text-lg">{error}</p>
-              </div>
-            </div>
-          </motion.div>
-        )}
-
-        {/* Estadísticas mejoradas */}
-        {vitals.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6 }}
-            className="bg-white/10 backdrop-blur-xl rounded-3xl shadow-2xl p-8 border border-white/20"
-          >
-            <h3 className="text-2xl font-bold bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent mb-8 flex items-center font-poppins">
-              <span className="text-3xl mr-4">📊</span>
-              Estadísticas de la Sesión
-            </h3>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 text-center border border-white/10">
-                <div className="text-4xl font-bold bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent mb-2">
-                  {vitals.length}
-                </div>
-                <div className="text-white text-lg">Lecturas totales</div>
-              </div>
-              
-              <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 text-center border border-white/10">
-                <div className="text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-2">
-                  {currentSession ? 
-                    Math.round((new Date() - new Date(currentSession.startTime)) / (1000 * 60)) : 0}
-                </div>
-                <div className="text-white text-lg">Minutos de monitoreo</div>
-              </div>
-              
-              <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 text-center border border-white/10">
-                <div className="text-4xl font-bold bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent mb-2">
-                  {vitals.filter(v => 
-                    getVitalStatus(v.heartRate, 'heartRate') === 'high' ||
-                    getVitalStatus(v.heartRate, 'heartRate') === 'low'
-                  ).length}
-                </div>
-                <div className="text-white text-lg">Alertas generadas</div>
-              </div>
-            </div>
-          </motion.div>
-        )}
-        
-        {/* Espacio adicional para forzar scroll */}
-        <div className="h-32"></div>
-      </div>
+      )}
     </div>
   );
 };
 
 export default VitalMonitor;
+
+// Componente funcional del chat bot
+function ChatBotPanel() {
+  const [mensajes, setMensajes] = useState([
+    { id: 1, texto: 'Hola! Escribe tu pulso y te diré como estás', usuario: false }
+  ]);
+  const [inputTexto, setInputTexto] = useState('');
+
+  const enviarMensaje = () => {
+    if (inputTexto === '') return;
+    const nuevoMensajeUsuario = {
+      id: Date.now(),
+      texto: inputTexto,
+      usuario: true
+    };
+    const numeros = inputTexto.match(/\d+/);
+    let respuestaBot;
+    if (numeros) {
+      const analisis = analizarPulso(numeros[0]);
+      respuestaBot = {
+        id: Date.now() + 1,
+        texto: analisis.mensaje,
+        usuario: false,
+        ...analisis
+      };
+    } else {
+      respuestaBot = {
+        id: Date.now() + 1,
+        texto: 'No entiendo. Escribe solo números como: 75',
+        usuario: false
+      };
+    }
+    setMensajes([...mensajes, nuevoMensajeUsuario, respuestaBot]);
+    setInputTexto('');
+  };
+  const presionarEnter = (e) => {
+    if (e.key === 'Enter') enviarMensaje();
+  };
+  useEffect(() => {
+    const chatDiv = document.getElementById('chat-messages-panel');
+    if (chatDiv) chatDiv.scrollTop = chatDiv.scrollHeight;
+  }, [mensajes]);
+  return (
+    <div className="flex-1 flex flex-col bg-[#23283a]/80">
+      <div id="chat-messages-panel" style={{height:'340px',overflowY:'auto',padding:'18px',background:'#23283a'}}>
+        {mensajes.map((m) => <ChatMessage key={m.id} mensaje={m} />)}
+      </div>
+      <InputArea
+        inputTexto={inputTexto}
+        setInputTexto={setInputTexto}
+        presionarEnter={presionarEnter}
+        enviarMensaje={enviarMensaje}
+      />
+    </div>
+  );
+}
+
+/* --- Scrollbar personalizado degradado --- */
+<style jsx global>{`
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 12px;
+    background: #181e30;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: linear-gradient(to bottom, #1aff8b, #7f5fff);
+    border-radius: 8px;
+    border: 2px solid #181e30;
+  }
+  .custom-scrollbar {
+    scrollbar-color: #1aff8b #181e30;
+    scrollbar-width: thin;
+  }
+`}</style>
