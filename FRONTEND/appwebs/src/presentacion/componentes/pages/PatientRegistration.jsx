@@ -37,21 +37,21 @@ const PatientRegistration = ({ onRegister }) => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-gray-900/80 p-6 rounded-2xl shadow-xl border border-green-500/20 max-w-md w-full mx-auto"
+      className="bg-gray-900/80 p-4 rounded-2xl shadow-xl border border-green-500/20 max-w-md w-full mx-auto"
     >
-      <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
+      <h2 className="text-xl font-bold text-white mb-3 flex items-center">
         <i className="fas fa-user-plus mr-2 text-green-400" />
         Registrar Paciente
       </h2>
 
       {error && (
-        <div className="mb-4 text-sm text-red-400 bg-red-900/30 border border-red-500/20 p-3 rounded-lg">
+        <div className="mb-2 text-xs text-red-400 bg-red-900/30 border border-red-500/20 p-2 rounded-lg">
           ❌ {error}
         </div>
       )}
 
-      <div className="mb-4">
-        <label htmlFor="nombre" className="block text-sm text-gray-300 mb-1">Nombre</label>
+      <div className="mb-2">
+        <label htmlFor="nombre" className="block text-xs text-gray-300 mb-1">Nombre</label>
         <input
           id="nombre"
           name="nombre"
@@ -59,12 +59,12 @@ const PatientRegistration = ({ onRegister }) => {
           placeholder="Nombre completo"
           value={formData.nombre}
           onChange={handleChange}
-          className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-white"
+          className="w-full px-3 py-1.5 bg-gray-800 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-white"
         />
       </div>
 
-      <div className="mb-4">
-        <label htmlFor="edad" className="block text-sm text-gray-300 mb-1">Edad</label>
+      <div className="mb-2">
+        <label htmlFor="edad" className="block text-xs text-gray-300 mb-1">Edad</label>
         <input
           id="edad"
           name="edad"
@@ -72,18 +72,18 @@ const PatientRegistration = ({ onRegister }) => {
           placeholder="Edad"
           value={formData.edad}
           onChange={handleChange}
-          className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-white"
+          className="w-full px-3 py-1.5 bg-gray-800 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-white"
         />
       </div>
 
-      <div className="mb-6">
-        <label htmlFor="genero" className="block text-sm text-gray-300 mb-1">Género</label>
+      <div className="mb-2">
+        <label htmlFor="genero" className="block text-xs text-gray-300 mb-1">Género</label>
         <select
           id="genero"
           name="genero"
           value={formData.genero}
           onChange={handleChange}
-          className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-white"
+          className="w-full px-3 py-1.5 bg-gray-800 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-white"
         >
           <option value="">Seleccionar</option>
           <option value="Masculino">Masculino</option>
@@ -94,12 +94,12 @@ const PatientRegistration = ({ onRegister }) => {
 
       <button
         type="submit"
-        className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-semibold transition duration-300"
+        className="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg font-semibold transition duration-300"
       >
         🩺 Registrar y Monitorear
       </button>
 
-      <p className="text-sm text-gray-400 mt-4 text-center">
+      <p className="text-xs text-gray-400 mt-2 text-center">
         🔄 Listo para monitoreo en tiempo real
       </p>
     </form>
