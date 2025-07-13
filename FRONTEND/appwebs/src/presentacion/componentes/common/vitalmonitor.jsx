@@ -42,20 +42,55 @@ function analizarPulso(pulso) {
 
 // Componente EstadoCard
 function EstadoCard({ estado, color, consejos }) {
-  const fondo = color === 'green' ? '#d4edda' : color === 'orange' ? '#fff3cd' : '#f8d7da';
-  const borde = color === 'green' ? '#c3e6cb' : color === 'orange' ? '#ffeaa7' : '#f5c6cb';
-  const texto = color === 'green' ? '#155724' : color === 'orange' ? '#856404' : '#721c24';
-  const icono = color === 'green' ? '✅' : color === 'orange' ? '⚠️' : '🚨';
+  // Paleta de colores moderna
+  const palette = {
+    green: { bg: '#e6fff3', text: '#0a4d2c', icon: '✅' },
+    orange: { bg: '#fff7e6', text: '#a86a00', icon: '⚠️' },
+    red: { bg: '#ffeaea', text: '#a8002a', icon: '🚨' }
+  };
+  const pal = palette[color] || palette.green;
+
   return (
-    <div style={{marginTop:'10px',padding:'8px 12px',backgroundColor:fondo,borderRadius:'8px',border:`1px solid ${borde}`}}>
-      <div style={{fontSize:'14px',fontWeight:'bold',color:texto,display:'flex',alignItems:'center',gap:'5px'}}>
-        {icono} Estado: {estado}
+    <div
+      style={{
+        marginTop: '10px',
+        padding: '12px 10px',
+        background: pal.bg,
+        borderRadius: '16px',
+        // border: `2px solid ${pal.border}`,
+        boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
+        width: '100%',
+        boxSizing: 'border-box',
+        marginBottom: '8px',
+        transition: 'box-shadow 0.2s'
+      }}
+    >
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        fontWeight: 'bold',
+        fontSize: '13px',
+        color: pal.text,
+        marginBottom: '8px',
+        gap: '8px'
+      }}>
+        <span style={{ fontSize: '1.7em' }}>{pal.icon}</span>
+        Estado: <span style={{ textTransform: 'uppercase', letterSpacing: '1px' }}>{estado}</span>
       </div>
       {consejos && (
-        <div style={{marginTop:'8px',fontSize:'12px',backgroundColor:'rgba(255,255,255,0.1)',padding:'8px',borderRadius:'6px'}}>
-          <strong style={{color:'#666'}}>💡 Consejos:</strong>
-          <ul style={{margin:'5px 0',paddingLeft:'15px',color:'#555'}}>
-            {consejos.map((c,i)=><li key={i}>{c}</li>)}
+        <div style={{
+          background: 'rgba(255,255,255,0.7)',
+          borderRadius: '10px',
+          padding: '8px 10px',
+          marginTop: '6px',
+          width: '100%',
+          boxSizing: 'border-box'
+        }}>
+          <strong style={{ color: pal.text, fontSize: '15px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            💡 Consejos:
+          </strong>
+          <ul style={{ margin: '7px 0 0 0', paddingLeft: '18px', color: '#444', fontSize: '14px' }}>
+            {consejos.map((c, i) => <li key={i}>{c}</li>)}
           </ul>
         </div>
       )}
@@ -65,26 +100,120 @@ function EstadoCard({ estado, color, consejos }) {
 
 // Componente ChatMessage
 function ChatMessage({ mensaje }) {
+  // Ruta de la imagen del bot (usa la del mensaje o una por defecto)
+  const botImg = mensaje.imgBotUrl || './SalusIMG/2-. Design@3x no back.png';
+
+  // Si es el mensaje de bienvenida, mostrar imagen grande y texto alineados
+  if (mensaje.esBienvenida) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '15px' }}>
+        <div style={{ minWidth: '70px', display: 'flex', justifyContent: 'center' }}>
+          <img
+            src={botImg}
+            alt="Chatbot"
+            style={{
+              width: '110px',
+              height: '95px',
+              borderRadius: '18px',
+              marginRight: '10px',
+              border: 'none',
+              background: 'none',
+              objectFit: 'cover'
+            }}
+          />
+        </div>
+        <div style={{
+          padding: '16px 20px',
+          borderRadius: '18px 18px 18px 6px',
+          backgroundColor: '#23283a',
+          color: '#fff',
+          fontSize: '13px',
+          boxShadow: '0 4px 12px #10151f33',
+          border: '1px solid #1aff8b22',
+          position: 'relative',
+          maxWidth: '70%'
+        }}>
+          {mensaje.texto}
+          <span style={{
+            position: 'absolute',
+            left: '-12px',
+            top: '28px',
+            width: 0,
+            height: 0,
+            borderTop: '12px solid transparent',
+            borderBottom: '12px solid transparent',
+            borderRight: '12px solid #23283a'
+          }} />
+        </div>
+      </div>
+    );
+  }
+
+  // Si es un mensaje del bot (no del usuario), mostrar imagen pequeña a la izquierda
+  if (!mensaje.usuario) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '15px' }}>
+        <div style={{ minWidth: '85px', display: 'flex', justifyContent: 'center' }}>
+          <img
+            src={botImg}
+            alt="Chatbot"
+            style={{
+              width: '85px',
+              height: '99px',
+              borderRadius: '100%',
+              marginRight: '10px',
+              border: 'none',
+              background: 'none',
+              objectFit: 'cover'
+            }}
+          />
+        </div>
+        <div style={{
+          padding: '12px 16px',
+          borderRadius: '18px 18px 18px 6px',
+          maxWidth: '85%',
+          backgroundColor: '#23283a',
+          color: '#fff',
+          boxShadow: '0 4px 12px #10151f33',
+          border: '1px solid #1aff8b22',
+          fontSize: '13px',
+          position: 'relative'
+        }}>
+          {mensaje.texto}
+          <span style={{
+            position: 'absolute',
+            left: '-12px',
+            top: '18px',
+            width: 0,
+            height: 0,
+            borderTop: '8px solid transparent',
+            borderBottom: '8px solid transparent',
+            borderRight: '12px solid #23283a'
+          }} />
+          {mensaje.estado && (
+            <EstadoCard estado={mensaje.estado} color={mensaje.color} consejos={mensaje.consejos} />
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // Mensaje del usuario (sin imagen)
   return (
     <div style={{ marginBottom: '15px' }}>
       <div style={{
         padding: '12px 16px',
         borderRadius: '18px',
         maxWidth: '85%',
-        backgroundColor: mensaje.usuario ? '#1aff8b' : '#23283a',
-        color: mensaje.usuario ? '#10151f' : '#fff',
-        marginLeft: mensaje.usuario ? 'auto' : '0',
-        marginRight: mensaje.usuario ? '0' : 'auto',
-        boxShadow: mensaje.usuario 
-          ? '0 4px 12px #1aff8b55' 
-          : '0 4px 12px #10151f33',
-        border: mensaje.usuario ? 'none' : '1px solid #1aff8b22',
+        backgroundColor: '#1aff8b',
+        color: '#10151f',
+        marginLeft: 'auto',
+        marginRight: '0',
+        boxShadow: '0 4px 12px #1aff8b55',
+        border: 'none',
         fontSize: '15px'
       }}>
         {mensaje.texto}
-        {mensaje.estado && (
-          <EstadoCard estado={mensaje.estado} color={mensaje.color} consejos={mensaje.consejos} />
-        )}
       </div>
     </div>
   );
@@ -306,7 +435,12 @@ const VitalMonitor = ({ patient }) => {
             {/* Header del chat */}
             <div className="flex items-center justify-between px-3 py-2 border-b border-[#1aff8b]/10 bg-[#23283a]/95 rounded-t-2xl">
               <div className="flex items-center gap-2">
-                <i className="fas fa-robot text-lg text-[#1aff8b]"></i>
+                {/* Imagen pequeña del bot en el header (puedes cambiar la ruta y el tamaño aquí) */}
+                <img
+                  src="/SalusIMG/Icono header redimensionado no back.png" // Cambia aquí la ruta de la imagen del bot
+                  alt="Chatbot"
+                  style={{ width: '28px', height: '28px', borderRadius: '50%', border: '2px solid #1aff8b', background: '#10151f' }}
+                />
                 <span className="font-bold text-base text-white">Chat Bot</span>
               </div>
               <button onClick={() => setIsChatOpen(false)} className="text-[#1aff8b] hover:text-[#7f5fff] text-lg font-bold px-2 py-1 rounded transition-all" title="Cerrar">
@@ -314,7 +448,7 @@ const VitalMonitor = ({ patient }) => {
               </button>
             </div>
             {/* Cuerpo del chat funcional */}
-            <ChatBotPanel />
+            <ChatBotPanel patient={patient} />
           </div>
           <style>{`
             .animate-fadeIn {
@@ -374,9 +508,15 @@ const VitalMonitor = ({ patient }) => {
 export default VitalMonitor;
 
 // Componente funcional del chat bot
-function ChatBotPanel() {
+function ChatBotPanel({ patient }) {
   const [mensajes, setMensajes] = useState([
-    { id: 1, texto: 'Hola! Escribe tu pulso y te diré como estás', usuario: false }
+    {
+      id: 1,
+      texto: `¡Hola ${patient.nombre}! Escribe tu pulso y te diré como estás`,
+      usuario: false,
+      esBienvenida: true,
+      imgBotUrl: './SalusIMG/1._Design3x redimensionado no back.png'
+    }
   ]);
   const [inputTexto, setInputTexto] = useState('');
 
@@ -436,12 +576,12 @@ function ChatBotPanel() {
     background: #181e30;
   }
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: linear-gradient(to bottom, #1aff8b, #7f5fff);
+    background: linear-gradient(to bottom, #1aff8b,hsl(155, 70.50%, 23.90%));
     border-radius: 8px;
     border: 2px solid #181e30;
   }
   .custom-scrollbar {
-    scrollbar-color: #1aff8b #181e30;
+    scrollbar-color:rgba(27, 122, 75, 0.73) #181e30;
     scrollbar-width: thin;
   }
 `}</style>
