@@ -117,7 +117,9 @@ function HomePage() {
                     transition={{ duration: 0.8, delay: 0.2 }}
                     className="bg-white/60 backdrop-blur-md shadow-xl rounded-3xl border border-white/30 p-10 mb-12 max-w-3xl mx-auto text-center flex flex-col items-center transition-all duration-300 hover:bg-gradient-to-r hover:from-blue-100 hover:via-blue-200 hover:to-blue-300 hover:shadow-2xl"
                   >
-                    <p className="text-xl leading-relaxed text-gray-900">
+                    <p className="text-xl leading-relaxed text-gray-900 font-bold tracking-wide" style={{
+                      textShadow: '0 0 8px rgba(0, 0, 0, 0.1), 0 0 16px rgba(0, 0, 0, 0.05)',
+                    }}>
                       Nos apasiona la tecnología y la innovación. Ayudamos a personas y empresas a llevar sus ideas al siguiente nivel, creando soluciones inteligentes en desarrollo web, IoT e inteligencia artificial. Combinamos creatividad, experiencia y trabajo en equipo para transformar desafíos en experiencias digitales útiles, atractivas y únicas.
                     </p>
                   </motion.div>

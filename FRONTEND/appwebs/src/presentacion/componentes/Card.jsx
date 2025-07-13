@@ -2,8 +2,8 @@ import { useRef, useEffect } from "react";
 import { motion, useTransform, animate, useSpring, useAnimation } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import img1 from "../../assets/imagen1.jpeg";
-import img2 from "../../assets/imagen2.jpeg";
-import img3 from "../../assets/imagen3.jpeg";
+import img2 from "/SalusIMG/lit-up-chatbot.png";
+import img3 from "/SalusIMG/desarrollo-web.png";
 
 function TiltCard({ theme, image, description }) {
   const ref = useRef(null);
@@ -100,11 +100,17 @@ function TiltCard({ theme, image, description }) {
       </div>
 
       <div className="relative z-10 flex flex-col justify-between h-full">
-        <div className="absolute top-4 left-4 px-2 py-1 bg-white/70 rounded text-sm font-semibold text-gray-800 shadow">
+        <div className="absolute top-4 left-4 px-3 py-2 bg-white/80 backdrop-blur-sm rounded-lg text-sm font-bold text-gray-800 shadow-lg" style={{
+          textShadow: '0 0 5px rgba(0, 0, 0, 0.1)',
+          letterSpacing: '0.05em',
+        }}>
           {theme}
         </div>
-        <div className="absolute bottom-4 left-4 right-4 text-black text-xs p-2 rounded-md bg-white/80 backdrop-blur-md shadow">
-          <p className="truncate whitespace-normal break-words">{description}</p>
+        <div className="absolute bottom-4 left-4 right-4 text-black text-xs p-3 rounded-lg bg-white/90 backdrop-blur-md shadow-lg">
+          <p className="truncate whitespace-normal break-words font-semibold tracking-wide" style={{
+            textShadow: '0 0 3px rgba(0, 0, 0, 0.05)',
+            lineHeight: '1.4',
+          }}>{description}</p>
         </div>
       </div>
     </motion.div>
