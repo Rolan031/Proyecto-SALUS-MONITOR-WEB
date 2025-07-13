@@ -69,7 +69,7 @@ const RegisterPage = () => {
       <SalusParticleBackground />
       
       {/* Contenedor del formulario con z-index apropiado */}
-      <div className="relative z-20 max-w-md w-full bg-[#23283a]/80 backdrop-blur-xl p-7 rounded-2xl shadow-2xl border border-[#1aff8b]/20 flex flex-col items-center" style={{boxShadow:'0 8px 40px #1aff8b22'}}>
+      <div className="relative z-20 max-w-md w-full bg-[#23283a]/90 px-8 py-6 rounded-2xl shadow-2xl flex flex-col items-center">
         <div className="w-full flex justify-center mb-2">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-[#1aff8b] rounded-xl shadow-lg mb-2">
             <i className="fas fa-user-plus text-3xl text-white"></i>
@@ -149,7 +149,7 @@ const RegisterPage = () => {
 
           <button
             type="submit"
-            className="w-full py-3 bg-[#1aff8b] hover:bg-[#13c77b] text-[#10151f] rounded-lg font-bold text-lg flex items-center justify-center gap-2 shadow-lg transition-all duration-200"
+            className="w-full py-3 bg-green-500 hover:bg-green-600 text-white rounded-lg font-bold text-lg flex items-center justify-center gap-2 shadow-lg transition-all duration-200"
             disabled={isLoading}
           >
             {isLoading ? (

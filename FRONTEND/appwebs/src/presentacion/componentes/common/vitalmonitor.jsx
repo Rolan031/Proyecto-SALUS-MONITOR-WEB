@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import useVitalData from '../pages/vitalmonitor/hooks/useVitalData';
 import VitalSignCard from '../common/VitalSignCard';
@@ -301,6 +301,18 @@ const VitalMonitor = ({ patient }) => {
   const [notification, setNotification] = useState(null);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [selectedDeviceId, setSelectedDeviceId] = useState(DEVICE_IDS[0]);
+  const [now, setNow] = useState(Date.now());
+  const intervalRef = useRef(null);
+
+  useEffect(() => {
+    if (currentSession && currentSession.startTime && !currentSession.endTime) {
+      intervalRef.current = setInterval(() => setNow(Date.now()), 1000);
+    } else {
+      clearInterval(intervalRef.current);
+      setNow(Date.now()); // reset al pausar
+    }
+    return () => clearInterval(intervalRef.current);
+  }, [currentSession && currentSession.startTime, currentSession && currentSession.endTime]);
 
   // Filtrar los vitals por el deviceId seleccionado
   const filteredVitals = vitals.filter(v => v.deviceId === selectedDeviceId);
@@ -346,43 +358,37 @@ const VitalMonitor = ({ patient }) => {
 
   return (
     <div className="min-h-screen w-full flex flex-col justify-between items-center relative overflow-y-auto custom-scrollbar">
-      {/* Partículas decorativas */}
-      <div className="absolute inset-0 z-0 pointer-events-none">
-        <svg width="100%" height="100%" className="absolute inset-0" style={{ opacity: 0.18 }}>
-          {[...Array(80)].map((_, i) => (
-            <circle key={i} cx={Math.random()*100+'%'} cy={Math.random()*100+'%'} r={Math.random()*2+1} fill="#1aff8b" />
-          ))}
-        </svg>
-      </div>
+      {/* Partículas decorativas (no se rerenderizan con el cronómetro) */}
+      <ParticleBackgroundSVG />
 
       {/* Header paciente */}
-      <div className="w-full max-w-5xl flex flex-row items-center justify-between bg-[#23283a]/80 backdrop-blur-xl rounded-2xl shadow-2xl px-10 py-2 mt-1 mb-1 border border-[#1aff8b]/20 z-10" style={{boxShadow:'0 8px 40px #1aff8b22'}}>
+      <div className="w-full max-w-3xl mx-auto flex flex-row items-center justify-between bg-[#23283a]/90 backdrop-blur-xl rounded-2xl shadow-2xl px-8 py-2 mt-4 mb-4 z-10">
         <div className="flex flex-row items-center gap-6">
-          <div className="w-20 h-20 rounded-2xl flex items-center justify-center bg-[#1aff8b]/20">
-            <span className="text-5xl text-[#1aff8b]"><i className="fas fa-user"></i></span>
+          <div className="w-14 h-14 rounded-2xl flex items-center justify-center bg-[#1aff8b]/20">
+            <span className="text-3xl text-[#1aff8b]"><i className="fas fa-user"></i></span>
           </div>
           <div className="flex flex-col">
-            <span className="text-2xl font-bold text-white leading-tight">{patient.nombre}</span>
-            <div className="flex flex-row gap-6 text-[#b6eada] text-lg mt-1">
+            <span className="text-lg font-bold text-white leading-tight">{patient.nombre}</span>
+            <div className="flex flex-row gap-4 text-[#b6eada] text-base mt-1">
               <span><i className="fas fa-birthday-cake mr-1" />{patient.edad} años</span>
               <span><i className="fas fa-venus-mars mr-1" />{patient.genero}</span>
               <span><i className="fas fa-calendar-alt mr-1" />{new Date().toLocaleDateString()}</span>
             </div>
           </div>
         </div>
-        <div className="flex flex-row items-center gap-3">
-          <span className={`w-4 h-4 rounded-full ${isMonitoring ? 'bg-[#1aff8b] animate-pulse' : 'bg-gray-400' }`}></span>
-          <span className={`font-semibold text-xl ${isMonitoring ? 'text-[#1aff8b]' : 'text-gray-400'}`}>{isMonitoring ? 'Monitoreando' : 'Detenido'}</span>
+        <div className="flex flex-row items-center gap-2">
+          <span className={`w-3 h-3 rounded-full ${isMonitoring ? 'bg-[#1aff8b] animate-pulse' : 'bg-gray-400' }`}></span>
+          <span className={`font-semibold text-base ${isMonitoring ? 'text-[#1aff8b]' : 'text-gray-400'}`}>{isMonitoring ? 'Monitoreando' : 'Detenido'}</span>
         </div>
       </div>
 
       {/* Selector de dispositivo */}
-      <div className="w-full max-w-5xl flex flex-row items-center justify-center mt-4 mb-2">
-        <label className="text-white mr-3 font-semibold">Dispositivo:</label>
+      <div className="w-full max-w-xs mx-auto flex flex-row items-center justify-center mb-4">
+        <label className="text-white mr-2 font-semibold">Dispositivo:</label>
         <select
           value={selectedDeviceId}
           onChange={e => setSelectedDeviceId(e.target.value)}
-          className="px-4 py-2 rounded-lg bg-[#23283a] text-[#1aff8b] border border-[#1aff8b]/40 focus:outline-none"
+          className="px-3 py-1 rounded-lg bg-[#23283a] text-[#1aff8b] border border-[#1aff8b]/40 focus:outline-none"
         >
           {DEVICE_IDS.map(id => (
             <option key={id} value={id}>{id}</option>
@@ -390,63 +396,68 @@ const VitalMonitor = ({ patient }) => {
         </select>
       </div>
 
-      {/* Main cards layout - Sin gap */}
-      <div className="w-full max-w-5xl flex flex-row justify-center items-stretch z-10 mb-1">
-        {/* Card BPM */}
-        <div className="flex-1 flex flex-col items-center justify-center bg-[#23283a]/80 backdrop-blur-xl rounded-l-2xl shadow-2xl border border-[#1aff8b]/20 border-r-0 px-2 py-6 min-w-[320px] max-w-[420px]" style={{boxShadow:'0 8px 40px #1aff8b22'}}>
+      {/* Dashboard grid */}
+      <div className="w-full max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch z-10 mb-4">
+        {/* Columna izquierda: Sesión y Estado */}
+        <div className="flex flex-col gap-6">
+          {/* Tiempo de sesión */}
+          <div className="bg-[#23283a]/90 rounded-2xl shadow-xl p-6 flex flex-col items-center justify-center min-h-[120px]">
+            <div className="text-[#1aff8b] text-2xl font-bold mb-1">
+              {currentSession && currentSession.startTime ? (() => {
+                const start = new Date(currentSession.startTime);
+                const end = currentSession.endTime ? new Date(currentSession.endTime) : new Date(now);
+                let duration = Math.floor((end - start) / 1000);
+                if (duration < 0) duration = 0;
+                const h = String(Math.floor(duration / 3600)).padStart(2, '0');
+                const m = String(Math.floor((duration % 3600) / 60)).padStart(2, '0');
+                const s = String(duration % 60).padStart(2, '0');
+                return `${h}:${m}:${s}`;
+              })() : '00:00:00'}
+            </div>
+            <div className="text-[#b6eada] text-base">TIEMPO DE SESIÓN</div>
+          </div>
+          {/* Estado de conexión */}
+          <div className="bg-[#23283a]/90 rounded-2xl shadow-xl p-6 flex flex-col items-center justify-center min-h-[120px]">
+            <div className={`text-2xl font-bold mb-1 ${isWsConnected ? 'text-[#1aff8b]' : 'text-[#ff4b7b]'}`}>{isWsConnected ? 'Conectado' : 'Desconectado'}</div>
+            <div className="text-[#b6eada] text-base">ESTADO ESP32</div>
+          </div>
+        </div>
+        {/* Columna central: BPM grande */}
+        <div className="flex flex-col items-center justify-center bg-[#23283a]/90 rounded-2xl shadow-2xl p-8 min-h-[260px]">
           <div className="text-8xl mb-2 animate-pulse">
             <span role="img" aria-label="corazon" className="" style={{filter:'drop-shadow(0 2px 8px #1aff8b88)'}}>❤️</span>
           </div>
-          <div className="text-7xl font-extrabold text-[#1aff8b] mb-1 tracking-wider">
+          <div className="text-6xl font-extrabold text-[#1aff8b] mb-1 tracking-wider">
             {latestVital ? latestVital.heartRate : '--'}
           </div>
           <div className="text-[#b6eada] text-2xl tracking-widest">BPM</div>
         </div>
-        {/* Card sesión */}
-        <div className="flex flex-col items-center justify-center bg-[#23283a]/80 backdrop-blur-xl rounded-r-2xl shadow-2xl border border-[#1aff8b]/20 px-10 py-6 min-w-[260px] max-w-[320px]" style={{boxShadow:'0 8px 40px #1aff8b22'}}>
-          <div className="flex flex-col items-center gap-4 w-full">
-            {/* Tiempo de sesión */}
-            <div className="flex flex-col items-center">
-              <div className="text-[#1aff8b] text-3xl font-bold mb-1">
-                {currentSession && currentSession.startTime ? (
-                  (() => {
-                    const start = new Date(currentSession.startTime);
-                    const end = currentSession.endTime ? new Date(currentSession.endTime) : new Date();
-                    const duration = Math.floor((end - start) / 1000);
-                    const h = String(Math.floor(duration / 3600)).padStart(2, '0');
-                    const m = String(Math.floor((duration % 3600) / 60)).padStart(2, '0');
-                    const s = String(duration % 60).padStart(2, '0');
-                    return `${h}:${m}:${s}`;
-                  })()
-                ) : '00:00:00'}
-              </div>
-              <div className="text-[#b6eada] text-lg">TIEMPO DE SESIÓN</div>
+        {/* Columna derecha: Datos recopilados */}
+        <div className="flex flex-col gap-6">
+          <div className="bg-[#23283a]/90 rounded-2xl shadow-xl p-6 flex flex-col items-center justify-center min-h-[120px]">
+            <div className="text-[#1aff8b] text-2xl font-bold mb-1">{filteredVitals.length}</div>
+            <div className="text-[#b6eada] text-base">DATOS RECOPILADOS</div>
+          </div>
+          <div className="bg-[#23283a]/90 rounded-2xl shadow-xl p-6 flex flex-col items-center justify-center min-h-[120px]">
+            <div className="text-[#1aff8b] text-2xl font-bold mb-1">
+              {filteredVitals.length > 0 ?
+                (filteredVitals.reduce((acc, v) => acc + (v.heartRate || 0), 0) / filteredVitals.length).toFixed(1)
+                : '--'}
             </div>
-            {/* Estado de conexión */}
-            <div className="flex flex-col items-center">
-              <div className={`text-2xl font-bold mb-1 ${isWsConnected ? 'text-[#1aff8b]' : 'text-[#ff4b7b]'}`}>{isWsConnected ? 'Conectado' : 'Desconectado'}</div>
-              <div className="text-[#b6eada] text-lg">ESTADO ESP32</div>
-            </div>
-            {/* Datos recopilados */}
-            <div className="flex flex-col items-center">
-              <div className="text-[#1aff8b] text-2xl font-bold mb-1">{filteredVitals.length}</div>
-              <div className="text-[#b6eada] text-lg">DATOS RECOPILADOS</div>
-            </div>
+            <div className="text-[#b6eada] text-base">PROMEDIO BPM</div>
           </div>
         </div>
       </div>
 
-      {/* Barra inferior de controles ultra compacta */}
-      <div className="w-full max-w-5xl flex flex-row items-center justify-center z-20 mt-1 mb-1">
-        <div className="flex flex-row items-center justify-center w-full bg-[#23283a]/80 backdrop-blur-xl border border-[#1aff8b]/20 rounded-2xl shadow-2xl px-3 py-1" style={{minHeight: '40px', boxShadow:'0 8px 40px #1aff8b22'}}>
-          <div className="flex flex-row gap-2 items-center w-full justify-center">
-            <ControlPanel
-              isMonitoring={isMonitoring}
-              onToggleMonitoring={handleToggleMonitoring}
-              patient={patient}
-              vitals={vitals}
-            />
-          </div>
+      {/* Barra inferior de controles */}
+      <div className="w-full flex flex-row items-center justify-center z-20 mt-2 mb-2">
+        <div className="flex flex-row items-center justify-center gap-4">
+          <ControlPanel
+            isMonitoring={isMonitoring}
+            onToggleMonitoring={handleToggleMonitoring}
+            patient={patient}
+            vitals={vitals}
+          />
         </div>
       </div>
 
@@ -473,13 +484,13 @@ const VitalMonitor = ({ patient }) => {
 
       {/* Modal flotante de chat bot */}
       {isChatOpen && (
-        <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end" style={{overflow: 'visible'}}>
+        <div className="fixed bottom-8 right-8 z-50 flex flex-col items-end" style={{overflow: 'visible'}}>
           <div
-            className="relative w-[320px] max-w-[90vw] max-h-[80vh] bg-[#23283a]/90 backdrop-blur-2xl border border-[#1aff8b]/40 shadow-xl rounded-2xl flex flex-col-reverse animate-fadeIn overflow-y-auto"
-            style={{boxShadow:'0 6px 32px #1aff8b33'}}
+            className="relative w-[420px] max-w-[98vw] bg-[#23283a]/95 backdrop-blur-2xl shadow-2xl rounded-2xl flex flex-col-reverse animate-fadeIn p-0"
+            style={{boxShadow:'0 8px 40px #10151f88', overflow: 'visible'}}
           >
             {/* Header del chat */}
-            <div className="flex items-center justify-between px-3 py-2 border-b border-[#1aff8b]/10 bg-[#23283a]/95 rounded-t-2xl">
+            <div className="flex items-center justify-between px-6 py-4 bg-[#23283a]/95 rounded-t-2xl">
               <div className="flex items-center gap-2">
                 {/* Imagen pequeña del bot en el header */}
                 <img
@@ -494,7 +505,9 @@ const VitalMonitor = ({ patient }) => {
               </button>
             </div>
             {/* Cuerpo del chat funcional */}
-            <ChatBotPanel patient={patient} />
+            <div className="flex-1 h-[420px] overflow-y-auto px-6 py-2 custom-scrollbar">
+              <ChatBotPanel patient={patient} />
+            </div>
           </div>
           <style>{`
             .animate-fadeIn {
@@ -503,6 +516,17 @@ const VitalMonitor = ({ patient }) => {
             @keyframes fadeIn {
               from { opacity: 0; transform: translateY(40px) scale(0.95); }
               to { opacity: 1; transform: translateY(0) scale(1); }
+            }
+            .custom-scrollbar::-webkit-scrollbar {
+              width: 8px;
+              background: transparent;
+            }
+            .custom-scrollbar::-webkit-scrollbar-thumb {
+              background: #1aff8b33;
+              border-radius: 8px;
+            }
+            .custom-scrollbar::-webkit-scrollbar-track {
+              background: transparent;
             }
           `}</style>
         </div>
@@ -614,6 +638,17 @@ function ChatBotPanel({ patient }) {
     </div>
   );
 }
+
+// Componente memoizado para partículas decorativas
+const ParticleBackgroundSVG = memo(() => (
+  <div className="absolute inset-0 z-0 pointer-events-none">
+    <svg width="100%" height="100%" className="absolute inset-0" style={{ opacity: 0.18 }}>
+      {[...Array(80)].map((_, i) => (
+        <circle key={i} cx={Math.random()*100+'%'} cy={Math.random()*100+'%'} r={Math.random()*2+1} fill="#1aff8b" />
+      ))}
+    </svg>
+  </div>
+));
 
 /* --- Scrollbar personalizado degradado --- */
 <style jsx global>{`

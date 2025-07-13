@@ -13,6 +13,16 @@ const Navbar = () => {
   const [showNavbar, setShowNavbar] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
 
+  // Handler para scroll suave a la sección 'about'
+  const handleAboutClick = (e) => {
+    e.preventDefault();
+    const aboutSection = document.getElementById('about');
+    if (aboutSection) {
+      aboutSection.scrollIntoView({ behavior: 'smooth' });
+      setIsOpen(false);
+    }
+  };
+
   const toggleMenu = () => {
     setIsOpen(!isOpen);
   };
@@ -80,12 +90,22 @@ const Navbar = () => {
           <ul className="flex sm:space-x-8 space-x-4 font-poppins">
             {navbarlinks.map((link) => (
               <li key={link.id}>
-                <a
-                  className="sm:text-lg text sm hover:text-sky-100 transition-transform hover:scale-110 transform inline-block duration-300 font-poppins"
-                  href={link.link}
-                >
-                  {link.title}
-                </a>
+                {link.title === 'Acerca de' ? (
+                  <a
+                    className="sm:text-lg text sm hover:text-sky-100 transition-transform hover:scale-110 transform inline-block duration-300 font-poppins"
+                    href="#about"
+                    onClick={handleAboutClick}
+                  >
+                    {link.title}
+                  </a>
+                ) : (
+                  <a
+                    className="sm:text-lg text sm hover:text-sky-100 transition-transform hover:scale-110 transform inline-block duration-300 font-poppins"
+                    href={link.link}
+                  >
+                    {link.title}
+                  </a>
+                )}
               </li>
             ))}
           </ul>
@@ -103,13 +123,23 @@ const Navbar = () => {
         <ul className="flex flex-col px-4 py-2 font-poppins">
           {navbarlinks.map((link) => (
             <li key={link.id} className="py-2 text-center">
-              <a
-                className="hover:text-sky-200 font-poppins"
-                href={link.link}
-                onClick={() => setIsOpen(false)}
-              >
-                {link.title}
-              </a>
+              {link.title === 'Acerca de' ? (
+                <a
+                  className="hover:text-sky-200 font-poppins"
+                  href="#about"
+                  onClick={handleAboutClick}
+                >
+                  {link.title}
+                </a>
+              ) : (
+                <a
+                  className="hover:text-sky-200 font-poppins"
+                  href={link.link}
+                  onClick={() => setIsOpen(false)}
+                >
+                  {link.title}
+                </a>
+              )}
             </li>
           ))}
         </ul>

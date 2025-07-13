@@ -68,8 +68,7 @@ const Personaje = () => {
             animate="animate"
             className="py-10 text-white text-base md:text-xl leading-relaxed" 
           >
-            Lorem ipsum dolor sit amet consectetur adipisicing elit.
-            Cumque, quos. Ipsa illum consectetur cum, quisquam laboriosam adipisci quo nulla. Fugiat et molestiae magni illum ea quidem quasi maxime iusto soluta?
+            Salus Monitor es una plataforma innovadora para el monitoreo en tiempo real de signos vitales, diseñada para mejorar la atención y el seguimiento de pacientes mediante tecnología IoT. Facilita la toma de decisiones clínicas y ofrece herramientas intuitivas.
           </motion.p>
           <motion.div
             variants={slideUp(1.1)}

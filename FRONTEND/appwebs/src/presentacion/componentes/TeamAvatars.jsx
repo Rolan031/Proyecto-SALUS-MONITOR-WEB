@@ -16,7 +16,7 @@ const members = [
     img: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/prisma/prisma-original.svg', // Prisma
   },
   {
-    name: 'Jibson Gamboa',
+    name: 'Jipson Gamboa',
     role: 'Frontend Avanzado (React Hooks, Axios, Framer Motion)',
     img: 'https://static.vecteezy.com/system/resources/previews/027/969/512/large_2x/robot-character-pose-illustration-happy-robot-jumping-and-cheering-design-vector.jpg', // robot animado
   },
