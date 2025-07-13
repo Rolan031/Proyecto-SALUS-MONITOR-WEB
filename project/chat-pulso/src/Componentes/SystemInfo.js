@@ -43,7 +43,7 @@ function SystemInfo({ isVisible, onClose }) {
       left: 0,
       right: 0,
       bottom: 0,
-      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      backgroundColor: 'rgba(0, 0, 0, 0.7)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -51,15 +51,15 @@ function SystemInfo({ isVisible, onClose }) {
       backdropFilter: 'blur(4px)'
     }}>
       <div style={{
-        background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
+        background: 'linear-gradient(135deg, #1f2937 0%, #111827 100%)',
         borderRadius: '16px',
         padding: '24px',
         maxWidth: '500px',
         width: '90%',
         maxHeight: '80vh',
         overflowY: 'auto',
-        boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
-        border: '1px solid rgba(255,255,255,0.2)',
+        boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
+        border: '1px solid rgba(16, 185, 129, 0.3)',
         position: 'relative'
       }}>
         {/* Header */}
@@ -69,13 +69,13 @@ function SystemInfo({ isVisible, onClose }) {
           alignItems: 'center',
           marginBottom: '20px',
           paddingBottom: '12px',
-          borderBottom: '1px solid rgba(0,0,0,0.1)'
+          borderBottom: '1px solid rgba(75, 85, 99, 0.3)'
         }}>
           <h3 style={{
             margin: 0,
             fontSize: '20px',
             fontWeight: '600',
-            color: '#374151'
+            color: '#f3f4f6'
           }}>
             📊 Información del Sistema
           </h3>
@@ -87,7 +87,7 @@ function SystemInfo({ isVisible, onClose }) {
               border: 'none',
               fontSize: '20px',
               cursor: 'pointer',
-              color: '#6b7280',
+              color: '#9ca3af',
               padding: '4px',
               borderRadius: '4px',
               transition: 'all 0.2s ease'
@@ -97,7 +97,7 @@ function SystemInfo({ isVisible, onClose }) {
               e.target.style.background = 'rgba(239, 68, 68, 0.1)';
             }}
             onMouseLeave={(e) => {
-              e.target.style.color = '#6b7280';
+              e.target.style.color = '#9ca3af';
               e.target.style.background = 'none';
             }}
           >
@@ -108,16 +108,16 @@ function SystemInfo({ isVisible, onClose }) {
         {/* Estado del servidor */}
         <div style={{
           padding: '16px',
-          background: 'rgba(255,255,255,0.8)',
+          background: 'rgba(31, 41, 55, 0.8)',
           borderRadius: '12px',
           marginBottom: '16px',
-          border: '1px solid rgba(255,255,255,0.9)'
+          border: '1px solid rgba(75, 85, 99, 0.3)'
         }}>
           <h4 style={{
             margin: '0 0 12px 0',
             fontSize: '16px',
             fontWeight: '600',
-            color: '#374151',
+            color: '#f3f4f6',
             display: 'flex',
             alignItems: 'center',
             gap: '8px'
@@ -130,7 +130,7 @@ function SystemInfo({ isVisible, onClose }) {
               display: 'flex',
               alignItems: 'center',
               gap: '8px',
-              color: '#6b7280'
+              color: '#9ca3af'
             }}>
               <div style={{
                 width: '12px',
@@ -142,7 +142,7 @@ function SystemInfo({ isVisible, onClose }) {
               Cargando...
             </div>
           ) : serverStatus ? (
-            <div style={{ fontSize: '14px', color: '#374151' }}>
+            <div style={{ fontSize: '14px', color: '#f3f4f6' }}>
               <div style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -200,16 +200,16 @@ function SystemInfo({ isVisible, onClose }) {
         {systemStats && systemStats.success && (
           <div style={{
             padding: '16px',
-            background: 'rgba(255,255,255,0.8)',
+            background: 'rgba(31, 41, 55, 0.8)',
             borderRadius: '12px',
             marginBottom: '16px',
-            border: '1px solid rgba(255,255,255,0.9)'
+            border: '1px solid rgba(75, 85, 99, 0.3)'
           }}>
             <h4 style={{
               margin: '0 0 12px 0',
               fontSize: '16px',
               fontWeight: '600',
-              color: '#374151',
+              color: '#f3f4f6',
               display: 'flex',
               alignItems: 'center',
               gap: '8px'
@@ -227,48 +227,52 @@ function SystemInfo({ isVisible, onClose }) {
                 padding: '8px',
                 background: 'rgba(59, 130, 246, 0.1)',
                 borderRadius: '8px',
-                textAlign: 'center'
+                textAlign: 'center',
+                border: '1px solid rgba(59, 130, 246, 0.2)'
               }}>
-                <div style={{ fontSize: '20px', fontWeight: '700', color: '#1d4ed8' }}>
+                <div style={{ fontSize: '20px', fontWeight: '700', color: '#3b82f6' }}>
                   {systemStats.data.totalPatients}
                 </div>
-                <div style={{ fontSize: '12px', color: '#6b7280' }}>Pacientes</div>
+                <div style={{ fontSize: '12px', color: '#9ca3af' }}>Pacientes</div>
               </div>
               
               <div style={{
                 padding: '8px',
                 background: 'rgba(16, 185, 129, 0.1)',
                 borderRadius: '8px',
-                textAlign: 'center'
+                textAlign: 'center',
+                border: '1px solid rgba(16, 185, 129, 0.2)'
               }}>
-                <div style={{ fontSize: '20px', fontWeight: '700', color: '#065f46' }}>
+                <div style={{ fontSize: '20px', fontWeight: '700', color: '#10b981' }}>
                   {systemStats.data.totalVitals}
                 </div>
-                <div style={{ fontSize: '12px', color: '#6b7280' }}>Registros</div>
+                <div style={{ fontSize: '12px', color: '#9ca3af' }}>Registros</div>
               </div>
               
               <div style={{
                 padding: '8px',
                 background: 'rgba(245, 158, 11, 0.1)',
                 borderRadius: '8px',
-                textAlign: 'center'
+                textAlign: 'center',
+                border: '1px solid rgba(245, 158, 11, 0.2)'
               }}>
-                <div style={{ fontSize: '20px', fontWeight: '700', color: '#92400e' }}>
+                <div style={{ fontSize: '20px', fontWeight: '700', color: '#f59e0b' }}>
                   {systemStats.data.totalSessions}
                 </div>
-                <div style={{ fontSize: '12px', color: '#6b7280' }}>Sesiones</div>
+                <div style={{ fontSize: '12px', color: '#9ca3af' }}>Sesiones</div>
               </div>
               
               <div style={{
                 padding: '8px',
                 background: 'rgba(139, 92, 246, 0.1)',
                 borderRadius: '8px',
-                textAlign: 'center'
+                textAlign: 'center',
+                border: '1px solid rgba(139, 92, 246, 0.2)'
               }}>
-                <div style={{ fontSize: '20px', fontWeight: '700', color: '#5b21b6' }}>
+                <div style={{ fontSize: '20px', fontWeight: '700', color: '#8b5cf6' }}>
                   {systemStats.data.totalDevices}
                 </div>
-                <div style={{ fontSize: '12px', color: '#6b7280' }}>Dispositivos</div>
+                <div style={{ fontSize: '12px', color: '#9ca3af' }}>Dispositivos</div>
               </div>
             </div>
             
@@ -277,19 +281,20 @@ function SystemInfo({ isVisible, onClose }) {
               padding: '8px',
               background: 'rgba(239, 68, 68, 0.1)',
               borderRadius: '8px',
-              textAlign: 'center'
+              textAlign: 'center',
+              border: '1px solid rgba(239, 68, 68, 0.2)'
             }}>
-              <div style={{ fontSize: '16px', fontWeight: '600', color: '#dc2626' }}>
+              <div style={{ fontSize: '16px', fontWeight: '600', color: '#ef4444' }}>
                 {systemStats.data.averageHeartRate} BPM
               </div>
-              <div style={{ fontSize: '12px', color: '#6b7280' }}>Promedio General</div>
+              <div style={{ fontSize: '12px', color: '#9ca3af' }}>Promedio General</div>
             </div>
             
             {systemStats.data.lastUpdate && (
               <div style={{
                 marginTop: '8px',
                 fontSize: '12px',
-                color: '#6b7280',
+                color: '#9ca3af',
                 textAlign: 'center'
               }}>
                 Última actualización: {new Date(systemStats.data.lastUpdate).toLocaleString('es-ES')}
@@ -301,16 +306,16 @@ function SystemInfo({ isVisible, onClose }) {
         {/* Información de conexión */}
         <div style={{
           padding: '16px',
-          background: 'rgba(255,255,255,0.8)',
+          background: 'rgba(31, 41, 55, 0.8)',
           borderRadius: '12px',
           marginBottom: '16px',
-          border: '1px solid rgba(255,255,255,0.9)'
+          border: '1px solid rgba(75, 85, 99, 0.3)'
         }}>
           <h4 style={{
             margin: '0 0 12px 0',
             fontSize: '16px',
             fontWeight: '600',
-            color: '#374151',
+            color: '#f3f4f6',
             display: 'flex',
             alignItems: 'center',
             gap: '8px'
@@ -318,7 +323,7 @@ function SystemInfo({ isVisible, onClose }) {
             🔗 Información de Conexión
           </h4>
           
-          <div style={{ fontSize: '14px', color: '#374151' }}>
+          <div style={{ fontSize: '14px', color: '#f3f4f6' }}>
             <div><strong>Backend URL:</strong> {apiService.API_BASE_URL || 'http://localhost:3000/api'}</div>
             <div><strong>WebSocket URL:</strong> {apiService.WS_URL || 'ws://localhost:3000/api/ws/vitals'}</div>
             <div><strong>Estado WebSocket:</strong> {apiService.isBackendConnected() ? 'Conectado' : 'Desconectado'}</div>
@@ -339,7 +344,7 @@ function SystemInfo({ isVisible, onClose }) {
             disabled={isLoading}
             style={{
               padding: '8px 16px',
-              background: 'linear-gradient(135deg, #667eea, #764ba2)',
+              background: 'linear-gradient(135deg, #059669, #0891b2)',
               color: 'white',
               border: 'none',
               borderRadius: '8px',
@@ -357,9 +362,9 @@ function SystemInfo({ isVisible, onClose }) {
             onClick={onClose}
             style={{
               padding: '8px 16px',
-              background: 'rgba(107, 114, 128, 0.1)',
-              color: '#374151',
-              border: '1px solid rgba(107, 114, 128, 0.2)',
+              background: 'rgba(75, 85, 99, 0.1)',
+              color: '#f3f4f6',
+              border: '1px solid rgba(75, 85, 99, 0.3)',
               borderRadius: '8px',
               cursor: 'pointer',
               fontSize: '14px',
@@ -367,10 +372,10 @@ function SystemInfo({ isVisible, onClose }) {
               transition: 'all 0.2s ease'
             }}
             onMouseEnter={(e) => {
-              e.target.style.background = 'rgba(107, 114, 128, 0.2)';
+              e.target.style.background = 'rgba(75, 85, 99, 0.2)';
             }}
             onMouseLeave={(e) => {
-              e.target.style.background = 'rgba(107, 114, 128, 0.1)';
+              e.target.style.background = 'rgba(75, 85, 99, 0.1)';
             }}
           >
             Cerrar

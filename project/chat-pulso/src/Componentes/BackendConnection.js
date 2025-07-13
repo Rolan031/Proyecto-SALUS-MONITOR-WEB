@@ -1,300 +1,295 @@
-import React, { useState, useEffect } from 'react';
-import apiService from '../services/apiService';
+import React from 'react';
 
-function BackendConnection({ onDataReceived, onConnectionChange }) {
-  const [connectionStatus, setConnectionStatus] = useState({
-    isConnected: false,
-    reconnectAttempts: 0,
-    maxReconnectAttempts: 5
-  });
-  
-  const [patients, setPatients] = useState([]);
-  const [selectedPatient, setSelectedPatient] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [lastData, setLastData] = useState(null);
+function EstadisticasCard({ estadisticas, onLimpiar, onExportar }) {
+  if (!estadisticas) return null;
 
-  useEffect(() => {
-    // Conectar al WebSocket al montar el componente
-    apiService.connectWebSocket('chat-pulso');
-    
-    // Escuchar cambios de conexión
-    const checkConnection = () => {
-      const status = apiService.getConnectionStatus();
-      setConnectionStatus(status);
-      onConnectionChange?.(status.isConnected);
-    };
-
-    // Verificar conexión cada 2 segundos
-    const interval = setInterval(checkConnection, 2000);
-    
-    // Escuchar datos en tiempo real
-    apiService.onMessage('VITAL_DATA', handleVitalData);
-    apiService.onMessage('REALTIME_DATA', handleRealTimeData);
-
-    // Cargar pacientes al conectar
-    if (apiService.isBackendConnected()) {
-      loadPatients();
-    }
-
-    return () => {
-      clearInterval(interval);
-      apiService.offMessage('VITAL_DATA', handleVitalData);
-      apiService.offMessage('REALTIME_DATA', handleRealTimeData);
-    };
-  }, []);
-
-  const handleVitalData = (data) => {
-    console.log('📊 Datos vitales recibidos:', data);
-    setLastData(data);
-    onDataReceived?.(data);
+  const formatNumber = (num) => {
+    return num ? num.toLocaleString('es-ES') : '0';
   };
 
-  const handleRealTimeData = (data) => {
-    console.log('⚡ Datos en tiempo real recibidos:', data);
-    setLastData(data);
-    onDataReceived?.(data);
-  };
-
-  const loadPatients = async () => {
-    try {
-      setIsLoading(true);
-      const patientsData = await apiService.getPatients();
-      setPatients(patientsData);
-    } catch (error) {
-      console.error('Error cargando pacientes:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handlePatientSelect = async (patientId) => {
-    try {
-      setIsLoading(true);
-      const patient = patients.find(p => p.id === patientId);
-      setSelectedPatient(patient);
-      
-      // Analizar datos del paciente
-      const analysis = await apiService.analyzeBackendVitals(patientId);
-      if (analysis.success) {
-        onDataReceived?.(analysis.data);
-      }
-    } catch (error) {
-      console.error('Error analizando paciente:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const refreshData = async () => {
-    if (selectedPatient) {
-      await handlePatientSelect(selectedPatient.id);
-    } else {
-      await loadPatients();
-    }
+  const getStatusColor = (value, max) => {
+    const percentage = (value / max) * 100;
+    if (percentage > 80) return '#10b981';
+    if (percentage > 60) return '#eab308';
+    if (percentage > 40) return '#f97316';
+    return '#ef4444';
   };
 
   return (
     <div style={{
       padding: '16px',
-      background: 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)',
+      background: 'rgba(31, 41, 55, 0.8)',
       borderRadius: '12px',
-      border: '1px solid rgba(59, 130, 246, 0.2)',
+      border: '1px solid rgba(16, 185, 129, 0.2)',
       marginBottom: '16px'
     }}>
-      {/* Estado de conexión */}
       <div style={{
         display: 'flex',
-        alignItems: 'center',
         justifyContent: 'space-between',
+        alignItems: 'center',
         marginBottom: '16px'
       }}>
-        <div style={{
+        <h3 style={{
+          margin: '0',
+          fontSize: '18px',
+          fontWeight: '600',
+          color: '#f3f4f6',
           display: 'flex',
           alignItems: 'center',
           gap: '8px'
         }}>
-          <div style={{
-            width: '12px',
-            height: '12px',
-            borderRadius: '50%',
-            backgroundColor: connectionStatus.isConnected ? '#10b981' : '#ef4444',
-            animation: connectionStatus.isConnected ? 'pulse 2s infinite' : 'none'
-          }} />
-          <span style={{
-            fontSize: '14px',
-            fontWeight: '600',
-            color: '#374151'
-          }}>
-            {connectionStatus.isConnected ? 'Conectado al Backend' : 'Desconectado'}
-          </span>
-        </div>
+          📊 Estadísticas del Chat
+        </h3>
         
-        <button
-          onClick={refreshData}
-          disabled={isLoading}
-          style={{
-            padding: '6px 12px',
-            background: 'linear-gradient(135deg, #667eea, #764ba2)',
-            color: 'white',
-            border: 'none',
-            borderRadius: '6px',
-            fontSize: '12px',
-            cursor: isLoading ? 'not-allowed' : 'pointer',
-            opacity: isLoading ? 0.6 : 1,
-            transition: 'all 0.2s ease'
-          }}
-        >
-          {isLoading ? '⏳' : '🔄'} Actualizar
-        </button>
-      </div>
-
-      {/* Información de reconexión */}
-      {!connectionStatus.isConnected && connectionStatus.reconnectAttempts > 0 && (
-        <div style={{
-          padding: '8px 12px',
-          background: 'rgba(245, 158, 11, 0.1)',
-          borderRadius: '8px',
-          border: '1px solid rgba(245, 158, 11, 0.2)',
-          marginBottom: '12px'
-        }}>
-          <div style={{
-            fontSize: '12px',
-            color: '#92400e',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px'
-          }}>
-            🔄 Reconectando... ({connectionStatus.reconnectAttempts}/{connectionStatus.maxReconnectAttempts})
-          </div>
-        </div>
-      )}
-
-      {/* Selector de paciente */}
-      {connectionStatus.isConnected && (
-        <div style={{ marginBottom: '12px' }}>
-          <label style={{
-            fontSize: '14px',
-            fontWeight: '600',
-            color: '#374151',
-            marginBottom: '8px',
-            display: 'block'
-          }}>
-            👤 Seleccionar Paciente:
-          </label>
-          
-          <select
-            value={selectedPatient?.id || ''}
-            onChange={(e) => handlePatientSelect(e.target.value)}
-            disabled={isLoading}
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <button
+            onClick={onLimpiar}
             style={{
-              width: '100%',
-              padding: '8px 12px',
-              border: '1px solid #d1d5db',
+              padding: '6px 12px',
+              background: 'rgba(239, 68, 68, 0.1)',
+              color: '#fca5a5',
+              border: '1px solid rgba(239, 68, 68, 0.2)',
               borderRadius: '6px',
-              fontSize: '14px',
-              backgroundColor: 'white',
-              cursor: isLoading ? 'not-allowed' : 'pointer'
+              fontSize: '12px',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease'
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.background = 'rgba(239, 68, 68, 0.2)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.background = 'rgba(239, 68, 68, 0.1)';
             }}
           >
-            <option value="">-- Seleccionar paciente --</option>
-            {patients.map(patient => (
-              <option key={patient.id} value={patient.id}>
-                {patient.name || `Paciente ${patient.id}`} 
-                {patient.email && ` (${patient.email})`}
-              </option>
-            ))}
-          </select>
-        </div>
-      )}
-
-      {/* Datos del paciente seleccionado */}
-      {selectedPatient && (
-        <div style={{
-          padding: '12px',
-          background: 'rgba(255,255,255,0.8)',
-          borderRadius: '8px',
-          border: '1px solid rgba(255,255,255,0.9)',
-          marginBottom: '12px'
-        }}>
-          <div style={{
-            fontSize: '14px',
-            fontWeight: '600',
-            color: '#374151',
-            marginBottom: '8px'
-          }}>
-            📋 Paciente Seleccionado:
-          </div>
+            🗑️ Limpiar
+          </button>
           
-          <div style={{
-            fontSize: '12px',
-            color: '#6b7280',
-            lineHeight: '1.4'
-          }}>
-            <div><strong>ID:</strong> {selectedPatient.id}</div>
-            {selectedPatient.name && <div><strong>Nombre:</strong> {selectedPatient.name}</div>}
-            {selectedPatient.email && <div><strong>Email:</strong> {selectedPatient.email}</div>}
-            {selectedPatient.phone && <div><strong>Teléfono:</strong> {selectedPatient.phone}</div>}
-          </div>
+          <button
+            onClick={onExportar}
+            style={{
+              padding: '6px 12px',
+              background: 'rgba(16, 185, 129, 0.1)',
+              color: '#10b981',
+              border: '1px solid rgba(16, 185, 129, 0.2)',
+              borderRadius: '6px',
+              fontSize: '12px',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease'
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.background = 'rgba(16, 185, 129, 0.2)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.background = 'rgba(16, 185, 129, 0.1)';
+            }}
+          >
+            📥 Exportar
+          </button>
         </div>
-      )}
+      </div>
 
-      {/* Últimos datos recibidos */}
-      {lastData && (
+      {/* Métricas principales */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
+        gap: '12px',
+        marginBottom: '16px'
+      }}>
         <div style={{
           padding: '12px',
           background: 'rgba(16, 185, 129, 0.1)',
           borderRadius: '8px',
-          border: '1px solid rgba(16, 185, 129, 0.2)'
+          border: '1px solid rgba(16, 185, 129, 0.2)',
+          textAlign: 'center'
         }}>
           <div style={{
-            fontSize: '14px',
-            fontWeight: '600',
-            color: '#065f46',
-            marginBottom: '8px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px'
+            fontSize: '24px',
+            fontWeight: '700',
+            color: '#10b981',
+            marginBottom: '4px'
           }}>
-            📊 Últimos Datos:
+            {formatNumber(estadisticas.totalAnalisis)}
           </div>
-          
           <div style={{
             fontSize: '12px',
-            color: '#065f46',
-            lineHeight: '1.4'
+            color: '#9ca3af'
           }}>
-            {lastData.current && (
-              <div><strong>Frecuencia actual:</strong> {lastData.current} BPM</div>
-            )}
-            {lastData.average && (
-              <div><strong>Promedio:</strong> {lastData.average} BPM</div>
-            )}
-            {lastData.totalRecords && (
-              <div><strong>Total registros:</strong> {lastData.totalRecords}</div>
-            )}
-            {lastData.lastUpdate && (
-              <div><strong>Última actualización:</strong> {new Date(lastData.lastUpdate).toLocaleString('es-ES')}</div>
-            )}
+            Análisis Totales
+          </div>
+        </div>
+
+        <div style={{
+          padding: '12px',
+          background: 'rgba(59, 130, 246, 0.1)',
+          borderRadius: '8px',
+          border: '1px solid rgba(59, 130, 246, 0.2)',
+          textAlign: 'center'
+        }}>
+          <div style={{
+            fontSize: '24px',
+            fontWeight: '700',
+            color: '#3b82f6',
+            marginBottom: '4px'
+          }}>
+            {formatNumber(estadisticas.promedioFrecuencia)}
+          </div>
+          <div style={{
+            fontSize: '12px',
+            color: '#9ca3af'
+          }}>
+            Promedio BPM
+          </div>
+        </div>
+
+        <div style={{
+          padding: '12px',
+          background: 'rgba(245, 158, 11, 0.1)',
+          borderRadius: '8px',
+          border: '1px solid rgba(245, 158, 11, 0.2)',
+          textAlign: 'center'
+        }}>
+          <div style={{
+            fontSize: '24px',
+            fontWeight: '700',
+            color: '#f59e0b',
+            marginBottom: '4px'
+          }}>
+            {formatNumber(estadisticas.maximaFrecuencia)}
+          </div>
+          <div style={{
+            fontSize: '12px',
+            color: '#9ca3af'
+          }}>
+            Máxima BPM
+          </div>
+        </div>
+
+        <div style={{
+          padding: '12px',
+          background: 'rgba(139, 92, 246, 0.1)',
+          borderRadius: '8px',
+          border: '1px solid rgba(139, 92, 246, 0.2)',
+          textAlign: 'center'
+        }}>
+          <div style={{
+            fontSize: '24px',
+            fontWeight: '700',
+            color: '#8b5cf6',
+            marginBottom: '4px'
+          }}>
+            {formatNumber(estadisticas.minimaFrecuencia)}
+          </div>
+          <div style={{
+            fontSize: '12px',
+            color: '#9ca3af'
+          }}>
+            Mínima BPM
+          </div>
+        </div>
+      </div>
+
+      {/* Distribución por estado */}
+      {estadisticas.distribucionEstados && (
+        <div style={{ marginBottom: '16px' }}>
+          <h4 style={{
+            margin: '0 0 12px 0',
+            fontSize: '14px',
+            fontWeight: '600',
+            color: '#f3f4f6'
+          }}>
+            📈 Distribución por Estado
+          </h4>
+          
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '8px'
+          }}>
+            {Object.entries(estadisticas.distribucionEstados).map(([estado, cantidad]) => {
+              const porcentaje = (cantidad / estadisticas.totalAnalisis) * 100;
+              return (
+                <div key={estado} style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px'
+                }}>
+                  <div style={{
+                    width: '80px',
+                    fontSize: '12px',
+                    color: '#d1d5db',
+                    fontWeight: '500'
+                  }}>
+                    {estado}
+                  </div>
+                  
+                  <div style={{
+                    flex: '1',
+                    height: '8px',
+                    background: 'rgba(75, 85, 99, 0.3)',
+                    borderRadius: '4px',
+                    overflow: 'hidden'
+                  }}>
+                    <div style={{
+                      width: `${porcentaje}%`,
+                      height: '100%',
+                      background: getStatusColor(porcentaje, 100),
+                      borderRadius: '4px',
+                      transition: 'width 0.3s ease'
+                    }} />
+                  </div>
+                  
+                  <div style={{
+                    width: '40px',
+                    fontSize: '11px',
+                    color: '#9ca3af',
+                    textAlign: 'right'
+                  }}>
+                    {cantidad}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}
 
-      {/* Instrucciones */}
-      {connectionStatus.isConnected && !selectedPatient && (
+      {/* Información adicional */}
+      <div style={{
+        padding: '12px',
+        background: 'rgba(15, 23, 42, 0.5)',
+        borderRadius: '8px',
+        border: '1px solid rgba(75, 85, 99, 0.2)'
+      }}>
         <div style={{
-          padding: '8px 12px',
-          background: 'rgba(59, 130, 246, 0.1)',
-          borderRadius: '8px',
-          border: '1px solid rgba(59, 130, 246, 0.2)',
-          fontSize: '12px',
-          color: '#1e40af',
-          textAlign: 'center'
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+          gap: '8px',
+          fontSize: '12px'
         }}>
-          💡 Selecciona un paciente para analizar sus datos de signos vitales
+          <div>
+            <span style={{ color: '#9ca3af' }}>Último análisis:</span>
+            <span style={{ color: '#f3f4f6', marginLeft: '4px' }}>
+              {estadisticas.ultimoAnalisis ? new Date(estadisticas.ultimoAnalisis).toLocaleString('es-ES') : 'N/A'}
+            </span>
+          </div>
+          
+          <div>
+            <span style={{ color: '#9ca3af' }}>Rango de frecuencias:</span>
+            <span style={{ color: '#f3f4f6', marginLeft: '4px' }}>
+              {estadisticas.minimaFrecuencia} - {estadisticas.maximaFrecuencia} BPM
+            </span>
+          </div>
+          
+          <div>
+            <span style={{ color: '#9ca3af' }}>Variabilidad:</span>
+            <span style={{ color: '#f3f4f6', marginLeft: '4px' }}>
+              {estadisticas.maximaFrecuencia - estadisticas.minimaFrecuencia} BPM
+            </span>
+          </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }
 
-export default BackendConnection;
+export default EstadisticasCard;

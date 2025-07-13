@@ -1,144 +1,39 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
-function InputArea({ inputTexto, setInputTexto, presionarEnter, enviarMensaje, isTyping, sugerencias = [] }) {
+function InputArea({ inputTexto, setInputTexto, presionarEnter, enviarMensaje, isTyping, sugerencias }) {
+  const [mostrarSugerencias, setMostrarSugerencias] = useState(false);
+
+  useEffect(() => {
+    setMostrarSugerencias(sugerencias.length > 0 && inputTexto.length > 0);
+  }, [sugerencias, inputTexto]);
+
   return (
-    <div style={{ 
-      padding: '20px', 
-      borderTop: '1px solid rgba(229, 231, 235, 0.8)', 
-      backgroundColor: 'white',
+    <div style={{
+      padding: '20px',
+      background: 'linear-gradient(135deg, #1f2937 0%, #111827 100%)',
+      borderTop: '1px solid rgba(16, 185, 129, 0.2)',
       position: 'relative'
     }}>
-      {/* Efecto de sombra superior */}
-      <div style={{
-        position: 'absolute',
-        top: '0',
-        left: '0',
-        right: '0',
-        height: '1px',
-        background: 'linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.2), transparent)'
-      }} />
-      
-      <div style={{ 
-        display: 'flex', 
-        gap: '12px', 
-        alignItems: 'center',
-        position: 'relative'
-      }}>
+      {/* Sugerencias */}
+      {mostrarSugerencias && (
         <div style={{
-          flex: '1',
-          position: 'relative',
-          display: 'flex',
-          alignItems: 'center'
-        }}>
-          <input
-            type="text"
-            value={inputTexto}
-            onChange={(e) => setInputTexto(e.target.value)}
-            onKeyPress={presionarEnter}
-            placeholder="Escribe tu frecuencia cardíaca..."
-            disabled={isTyping}
-            style={{
-              width: '100%',
-              padding: '16px 20px',
-              border: '2px solid #e5e7eb',
-              borderRadius: '25px',
-              fontSize: '15px',
-              outline: 'none',
-              transition: 'all 0.3s ease',
-              backgroundColor: isTyping ? '#f9fafb' : 'white',
-              color: isTyping ? '#9ca3af' : '#374151',
-              fontFamily: '"Inter", sans-serif',
-              fontWeight: '400'
-            }}
-            onFocus={(e) => {
-              if (!isTyping) {
-                e.target.style.borderColor = '#667eea';
-                e.target.style.boxShadow = '0 0 0 3px rgba(102, 126, 234, 0.1)';
-              }
-            }}
-            onBlur={(e) => {
-              e.target.style.borderColor = '#e5e7eb';
-              e.target.style.boxShadow = 'none';
-            }}
-          />
-          
-          {/* Icono de pulso */}
-          <div style={{
-            position: 'absolute',
-            right: '16px',
-            fontSize: '18px',
-            color: isTyping ? '#9ca3af' : '#667eea',
-            animation: isTyping ? 'none' : 'pulse 2s infinite'
-          }}>
-            💓
-          </div>
-        </div>
-        
-        <button
-          onClick={enviarMensaje}
-          disabled={isTyping || inputTexto.trim() === ''}
-          style={{
-            padding: '16px 24px',
-            background: isTyping || inputTexto.trim() === '' 
-              ? 'linear-gradient(135deg, #9ca3af, #6b7280)'
-              : 'linear-gradient(135deg, #667eea, #764ba2)',
-            color: 'white',
-            border: 'none',
-            borderRadius: '25px',
-            cursor: isTyping || inputTexto.trim() === '' ? 'not-allowed' : 'pointer',
-            fontSize: '15px',
-            fontWeight: '600',
-            boxShadow: isTyping || inputTexto.trim() === ''
-              ? '0 4px 12px rgba(156, 163, 175, 0.3)'
-              : '0 8px 25px rgba(102, 126, 234, 0.3)',
-            transition: 'all 0.3s ease',
-            fontFamily: '"Inter", sans-serif',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            minWidth: '120px',
-            justifyContent: 'center'
-          }}
-          onMouseEnter={(e) => {
-            if (!isTyping && inputTexto.trim() !== '') {
-              e.target.style.transform = 'translateY(-2px)';
-              e.target.style.boxShadow = '0 12px 35px rgba(102, 126, 234, 0.4)';
-            }
-          }}
-          onMouseLeave={(e) => {
-            e.target.style.transform = 'translateY(0)';
-            e.target.style.boxShadow = isTyping || inputTexto.trim() === ''
-              ? '0 4px 12px rgba(156, 163, 175, 0.3)'
-              : '0 8px 25px rgba(102, 126, 234, 0.3)';
-          }}
-        >
-          {isTyping ? (
-            <>
-              <div style={{ fontSize: '14px' }}>⏳</div>
-              Esperando...
-            </>
-          ) : (
-            <>
-              <div style={{ fontSize: '16px' }}>📤</div>
-              Enviar
-            </>
-          )}
-        </button>
-      </div>
-
-      {/* Sugerencias contextuales */}
-      {sugerencias.length > 0 && inputTexto.trim() !== '' && (
-        <div style={{
-          marginTop: '12px',
-          padding: '12px',
-          background: 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)',
+          position: 'absolute',
+          bottom: '100%',
+          left: '20px',
+          right: '20px',
+          background: 'rgba(15, 23, 42, 0.95)',
           borderRadius: '12px',
-          border: '1px solid rgba(59, 130, 246, 0.2)'
+          padding: '12px',
+          marginBottom: '8px',
+          boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+          border: '1px solid rgba(16, 185, 129, 0.3)',
+          backdropFilter: 'blur(10px)',
+          zIndex: 10
         }}>
           <div style={{
-            fontSize: '13px',
+            fontSize: '12px',
+            color: '#10b981',
             fontWeight: '600',
-            color: '#1e40af',
             marginBottom: '8px',
             display: 'flex',
             alignItems: 'center',
@@ -148,18 +43,35 @@ function InputArea({ inputTexto, setInputTexto, presionarEnter, enviarMensaje, i
           </div>
           <div style={{
             display: 'flex',
-            flexDirection: 'column',
-            gap: '4px'
+            flexWrap: 'wrap',
+            gap: '6px'
           }}>
             {sugerencias.map((sugerencia, index) => (
-              <div key={index} style={{
-                fontSize: '12px',
-                color: '#374151',
-                padding: '4px 8px',
-                background: 'rgba(255,255,255,0.6)',
-                borderRadius: '6px',
-                border: '1px solid rgba(255,255,255,0.8)'
-              }}>
+              <div
+                key={index}
+                style={{
+                  padding: '4px 8px',
+                  background: 'rgba(16, 185, 129, 0.1)',
+                  borderRadius: '6px',
+                  fontSize: '11px',
+                  color: '#10b981',
+                  border: '1px solid rgba(16, 185, 129, 0.2)',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.background = 'rgba(16, 185, 129, 0.2)';
+                  e.target.style.borderColor = 'rgba(16, 185, 129, 0.4)';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.background = 'rgba(16, 185, 129, 0.1)';
+                  e.target.style.borderColor = 'rgba(16, 185, 129, 0.2)';
+                }}
+                onClick={() => {
+                  setInputTexto(sugerencia);
+                  setMostrarSugerencias(false);
+                }}
+              >
                 {sugerencia}
               </div>
             ))}
@@ -167,21 +79,154 @@ function InputArea({ inputTexto, setInputTexto, presionarEnter, enviarMensaje, i
         </div>
       )}
 
-      <div style={{ 
-        textAlign: 'center', 
-        marginTop: '12px', 
-        fontSize: '13px', 
-        color: '#6b7280',
-        fontFamily: '"Inter", sans-serif',
-        fontWeight: '400'
+      {/* Área de entrada */}
+      <div style={{
+        display: 'flex',
+        gap: '12px',
+        alignItems: 'flex-end'
       }}>
-        {isTyping ? (
-          <span style={{ color: '#667eea' }}>🔄 Analizando tu frecuencia cardíaca...</span>
-        ) : (
-          <>
-            💡 <strong>Ejemplos:</strong> "75", "Mi pulso es 80", "Bebé con 120 BPM"
-          </>
-        )}
+        <div style={{
+          flex: '1',
+          position: 'relative'
+        }}>
+          <textarea
+            value={inputTexto}
+            onChange={(e) => setInputTexto(e.target.value)}
+            onKeyDown={presionarEnter}
+            placeholder="Escribe tu frecuencia cardíaca o pregunta..."
+            disabled={isTyping}
+            style={{
+              width: '100%',
+              minHeight: '44px',
+              maxHeight: '120px',
+              padding: '12px 16px',
+              background: 'rgba(31, 41, 55, 0.8)',
+              border: '1px solid rgba(75, 85, 99, 0.5)',
+              borderRadius: '12px',
+              color: '#f3f4f6',
+              fontSize: '14px',
+              fontFamily: '"Poppins", sans-serif',
+              resize: 'none',
+              outline: 'none',
+              transition: 'all 0.2s ease',
+              cursor: isTyping ? 'not-allowed' : 'text'
+            }}
+            onFocus={(e) => {
+              e.target.style.borderColor = 'rgba(16, 185, 129, 0.5)';
+              e.target.style.boxShadow = '0 0 0 3px rgba(16, 185, 129, 0.1)';
+            }}
+            onBlur={(e) => {
+              e.target.style.borderColor = 'rgba(75, 85, 99, 0.5)';
+              e.target.style.boxShadow = 'none';
+            }}
+          />
+          
+          {/* Indicador de caracteres */}
+          <div style={{
+            position: 'absolute',
+            bottom: '8px',
+            right: '12px',
+            fontSize: '10px',
+            color: inputTexto.length > 200 ? '#ef4444' : '#6b7280',
+            pointerEvents: 'none'
+          }}>
+            {inputTexto.length}/200
+          </div>
+        </div>
+
+        {/* Botón de envío */}
+        <button
+          onClick={enviarMensaje}
+          disabled={inputTexto.trim() === '' || isTyping}
+          style={{
+            width: '44px',
+            height: '44px',
+            background: inputTexto.trim() === '' || isTyping
+              ? 'rgba(75, 85, 99, 0.3)'
+              : 'linear-gradient(135deg, #059669 0%, #0891b2 100%)',
+            border: 'none',
+            borderRadius: '12px',
+            color: 'white',
+            cursor: inputTexto.trim() === '' || isTyping ? 'not-allowed' : 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '16px',
+            transition: 'all 0.2s ease',
+            boxShadow: inputTexto.trim() === '' || isTyping
+              ? 'none'
+              : '0 4px 12px rgba(5, 150, 105, 0.3)'
+          }}
+          onMouseEnter={(e) => {
+            if (inputTexto.trim() !== '' && !isTyping) {
+              e.target.style.transform = 'scale(1.05)';
+              e.target.style.boxShadow = '0 6px 16px rgba(5, 150, 105, 0.4)';
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (inputTexto.trim() !== '' && !isTyping) {
+              e.target.style.transform = 'scale(1)';
+              e.target.style.boxShadow = '0 4px 12px rgba(5, 150, 105, 0.3)';
+            }
+          }}
+        >
+          {isTyping ? (
+            <div style={{
+              width: '16px',
+              height: '16px',
+              border: '2px solid rgba(255,255,255,0.3)',
+              borderTop: '2px solid white',
+              borderRadius: '50%',
+              animation: 'spin 1s linear infinite'
+            }} />
+          ) : (
+            <span style={{ fontSize: '18px' }}>➤</span>
+          )}
+        </button>
+      </div>
+
+      {/* Indicadores de estado */}
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginTop: '8px',
+        fontSize: '11px',
+        color: '#6b7280'
+      }}>
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '6px'
+        }}>
+          {isTyping && (
+            <>
+              <div style={{
+                width: '8px',
+                height: '8px',
+                borderRadius: '50%',
+                backgroundColor: '#10b981',
+                animation: 'pulse 1s infinite'
+              }} />
+              <span>Analizando...</span>
+            </>
+          )}
+        </div>
+        
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px'
+        }}>
+          <span>💡 Presiona Enter para enviar</span>
+          {inputTexto.length > 0 && (
+            <span style={{
+              color: inputTexto.length > 200 ? '#ef4444' : '#10b981'
+            }}>
+              {inputTexto.length} caracteres
+            </span>
+          )}
+        </div>
       </div>
     </div>
   );

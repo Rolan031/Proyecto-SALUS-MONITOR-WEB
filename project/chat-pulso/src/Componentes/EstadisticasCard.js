@@ -1,197 +1,106 @@
 import React from 'react';
 
 function EstadisticasCard({ estadisticas, onLimpiar, onExportar }) {
-  if (!estadisticas) {
-    return null;
-  }
+  if (!estadisticas) return null;
 
-  const { promedio, min, max, totalRegistros, estadoMasComun, tendencia } = estadisticas;
-
-  const getTendenciaColor = (tendencia) => {
-    switch (tendencia) {
-      case 'Elevada':
-        return { color: '#ef4444', icon: '📈' };
-      case 'Baja':
-        return { color: '#3b82f6', icon: '📉' };
-      default:
-        return { color: '#10b981', icon: '📊' };
-    }
+  const formatNumber = (num) => {
+    return num ? num.toLocaleString('es-ES') : '0';
   };
 
-  const tendenciaInfo = getTendenciaColor(tendencia);
+  const getStatusColor = (value, max) => {
+    const percentage = (value / max) * 100;
+    if (percentage > 80) return '#10b981';
+    if (percentage > 60) return '#eab308';
+    if (percentage > 40) return '#f97316';
+    return '#ef4444';
+  };
 
   return (
     <div style={{
-      margin: '16px 0',
-      padding: '20px',
-      background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
-      borderRadius: '16px',
-      border: '2px solid rgba(102, 126, 234, 0.1)',
-      boxShadow: '0 8px 25px rgba(0,0,0,0.08)'
+      padding: '16px',
+      background: 'rgba(31, 41, 55, 0.8)',
+      borderRadius: '12px',
+      border: '1px solid rgba(16, 185, 129, 0.2)',
+      marginBottom: '16px'
     }}>
       <div style={{
         display: 'flex',
-        alignItems: 'center',
         justifyContent: 'space-between',
+        alignItems: 'center',
         marginBottom: '16px'
       }}>
         <h3 style={{
           margin: '0',
           fontSize: '18px',
           fontWeight: '600',
-          color: '#374151',
+          color: '#f3f4f6',
           display: 'flex',
           alignItems: 'center',
           gap: '8px'
         }}>
-          📊 Estadísticas de Sesión
+          📊 Estadísticas del Chat
         </h3>
         
         <div style={{ display: 'flex', gap: '8px' }}>
           <button
-            onClick={onExportar}
-            style={{
-              padding: '6px 12px',
-              background: 'linear-gradient(135deg, #667eea, #764ba2)',
-              color: 'white',
-              border: 'none',
-              borderRadius: '8px',
-              fontSize: '12px',
-              cursor: 'pointer',
-              fontWeight: '500',
-              transition: 'all 0.2s ease'
-            }}
-            onMouseEnter={(e) => {
-              e.target.style.transform = 'translateY(-1px)';
-              e.target.style.boxShadow = '0 4px 12px rgba(102, 126, 234, 0.3)';
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.transform = 'translateY(0)';
-              e.target.style.boxShadow = 'none';
-            }}
-          >
-            📥 Exportar
-          </button>
-          
-          <button
             onClick={onLimpiar}
             style={{
               padding: '6px 12px',
-              background: 'linear-gradient(135deg, #ef4444, #dc2626)',
-              color: 'white',
-              border: 'none',
-              borderRadius: '8px',
+              background: 'rgba(239, 68, 68, 0.1)',
+              color: '#fca5a5',
+              border: '1px solid rgba(239, 68, 68, 0.2)',
+              borderRadius: '6px',
               fontSize: '12px',
               cursor: 'pointer',
-              fontWeight: '500',
               transition: 'all 0.2s ease'
             }}
             onMouseEnter={(e) => {
-              e.target.style.transform = 'translateY(-1px)';
-              e.target.style.boxShadow = '0 4px 12px rgba(239, 68, 68, 0.3)';
+              e.target.style.background = 'rgba(239, 68, 68, 0.2)';
             }}
             onMouseLeave={(e) => {
-              e.target.style.transform = 'translateY(0)';
-              e.target.style.boxShadow = 'none';
+              e.target.style.background = 'rgba(239, 68, 68, 0.1)';
             }}
           >
             🗑️ Limpiar
           </button>
+          
+          <button
+            onClick={onExportar}
+            style={{
+              padding: '6px 12px',
+              background: 'rgba(16, 185, 129, 0.1)',
+              color: '#10b981',
+              border: '1px solid rgba(16, 185, 129, 0.2)',
+              borderRadius: '6px',
+              fontSize: '12px',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease'
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.background = 'rgba(16, 185, 129, 0.2)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.background = 'rgba(16, 185, 129, 0.1)';
+            }}
+          >
+            📥 Exportar
+          </button>
         </div>
       </div>
 
+      {/* Métricas principales */}
       <div style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
         gap: '12px',
         marginBottom: '16px'
       }}>
-        {/* Promedio */}
         <div style={{
           padding: '12px',
-          background: 'white',
-          borderRadius: '12px',
-          textAlign: 'center',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
-          border: '1px solid rgba(229, 231, 235, 0.8)'
-        }}>
-          <div style={{
-            fontSize: '24px',
-            fontWeight: '700',
-            color: '#667eea',
-            marginBottom: '4px'
-          }}>
-            {promedio}
-          </div>
-          <div style={{
-            fontSize: '12px',
-            color: '#6b7280',
-            fontWeight: '500'
-          }}>
-            Promedio BPM
-          </div>
-        </div>
-
-        {/* Mínimo */}
-        <div style={{
-          padding: '12px',
-          background: 'white',
-          borderRadius: '12px',
-          textAlign: 'center',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
-          border: '1px solid rgba(229, 231, 235, 0.8)'
-        }}>
-          <div style={{
-            fontSize: '24px',
-            fontWeight: '700',
-            color: '#3b82f6',
-            marginBottom: '4px'
-          }}>
-            {min}
-          </div>
-          <div style={{
-            fontSize: '12px',
-            color: '#6b7280',
-            fontWeight: '500'
-          }}>
-            Mínimo BPM
-          </div>
-        </div>
-
-        {/* Máximo */}
-        <div style={{
-          padding: '12px',
-          background: 'white',
-          borderRadius: '12px',
-          textAlign: 'center',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
-          border: '1px solid rgba(229, 231, 235, 0.8)'
-        }}>
-          <div style={{
-            fontSize: '24px',
-            fontWeight: '700',
-            color: '#ef4444',
-            marginBottom: '4px'
-          }}>
-            {max}
-          </div>
-          <div style={{
-            fontSize: '12px',
-            color: '#6b7280',
-            fontWeight: '500'
-          }}>
-            Máximo BPM
-          </div>
-        </div>
-
-        {/* Total Registros */}
-        <div style={{
-          padding: '12px',
-          background: 'white',
-          borderRadius: '12px',
-          textAlign: 'center',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
-          border: '1px solid rgba(229, 231, 235, 0.8)'
+          background: 'rgba(16, 185, 129, 0.1)',
+          borderRadius: '8px',
+          border: '1px solid rgba(16, 185, 129, 0.2)',
+          textAlign: 'center'
         }}>
           <div style={{
             fontSize: '24px',
@@ -199,91 +108,188 @@ function EstadisticasCard({ estadisticas, onLimpiar, onExportar }) {
             color: '#10b981',
             marginBottom: '4px'
           }}>
-            {totalRegistros}
+            {formatNumber(estadisticas.totalAnalisis)}
           </div>
           <div style={{
             fontSize: '12px',
-            color: '#6b7280',
-            fontWeight: '500'
+            color: '#9ca3af'
           }}>
-            Registros
+            Análisis Totales
+          </div>
+        </div>
+
+        <div style={{
+          padding: '12px',
+          background: 'rgba(59, 130, 246, 0.1)',
+          borderRadius: '8px',
+          border: '1px solid rgba(59, 130, 246, 0.2)',
+          textAlign: 'center'
+        }}>
+          <div style={{
+            fontSize: '24px',
+            fontWeight: '700',
+            color: '#3b82f6',
+            marginBottom: '4px'
+          }}>
+            {formatNumber(estadisticas.promedioFrecuencia)}
+          </div>
+          <div style={{
+            fontSize: '12px',
+            color: '#9ca3af'
+          }}>
+            Promedio BPM
+          </div>
+        </div>
+
+        <div style={{
+          padding: '12px',
+          background: 'rgba(245, 158, 11, 0.1)',
+          borderRadius: '8px',
+          border: '1px solid rgba(245, 158, 11, 0.2)',
+          textAlign: 'center'
+        }}>
+          <div style={{
+            fontSize: '24px',
+            fontWeight: '700',
+            color: '#f59e0b',
+            marginBottom: '4px'
+          }}>
+            {formatNumber(estadisticas.maximaFrecuencia)}
+          </div>
+          <div style={{
+            fontSize: '12px',
+            color: '#9ca3af'
+          }}>
+            Máxima BPM
+          </div>
+        </div>
+
+        <div style={{
+          padding: '12px',
+          background: 'rgba(139, 92, 246, 0.1)',
+          borderRadius: '8px',
+          border: '1px solid rgba(139, 92, 246, 0.2)',
+          textAlign: 'center'
+        }}>
+          <div style={{
+            fontSize: '24px',
+            fontWeight: '700',
+            color: '#8b5cf6',
+            marginBottom: '4px'
+          }}>
+            {formatNumber(estadisticas.minimaFrecuencia)}
+          </div>
+          <div style={{
+            fontSize: '12px',
+            color: '#9ca3af'
+          }}>
+            Mínima BPM
           </div>
         </div>
       </div>
+
+      {/* Distribución por estado */}
+      {estadisticas.distribucionEstados && (
+        <div style={{ marginBottom: '16px' }}>
+          <h4 style={{
+            margin: '0 0 12px 0',
+            fontSize: '14px',
+            fontWeight: '600',
+            color: '#f3f4f6'
+          }}>
+            📈 Distribución por Estado
+          </h4>
+          
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '8px'
+          }}>
+            {Object.entries(estadisticas.distribucionEstados).map(([estado, cantidad]) => {
+              const porcentaje = (cantidad / estadisticas.totalAnalisis) * 100;
+              return (
+                <div key={estado} style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px'
+                }}>
+                  <div style={{
+                    width: '80px',
+                    fontSize: '12px',
+                    color: '#d1d5db',
+                    fontWeight: '500'
+                  }}>
+                    {estado}
+                  </div>
+                  
+                  <div style={{
+                    flex: '1',
+                    height: '8px',
+                    background: 'rgba(75, 85, 99, 0.3)',
+                    borderRadius: '4px',
+                    overflow: 'hidden'
+                  }}>
+                    <div style={{
+                      width: `${porcentaje}%`,
+                      height: '100%',
+                      background: getStatusColor(porcentaje, 100),
+                      borderRadius: '4px',
+                      transition: 'width 0.3s ease'
+                    }} />
+                  </div>
+                  
+                  <div style={{
+                    width: '40px',
+                    fontSize: '11px',
+                    color: '#9ca3af',
+                    textAlign: 'right'
+                  }}>
+                    {cantidad}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Información adicional */}
       <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        padding: '12px 16px',
-        background: 'rgba(255,255,255,0.8)',
-        borderRadius: '12px',
-        border: '1px solid rgba(229, 231, 235, 0.8)'
-      }}>
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px'
-        }}>
-          <span style={{ fontSize: '16px' }}>🎯</span>
-          <div>
-            <div style={{
-              fontSize: '14px',
-              fontWeight: '600',
-              color: '#374151'
-            }}>
-              Estado más común
-            </div>
-            <div style={{
-              fontSize: '12px',
-              color: '#6b7280'
-            }}>
-              {estadoMasComun}
-            </div>
-          </div>
-        </div>
-
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px'
-        }}>
-          <span style={{ fontSize: '16px' }}>{tendenciaInfo.icon}</span>
-          <div>
-            <div style={{
-              fontSize: '14px',
-              fontWeight: '600',
-              color: '#374151'
-            }}>
-              Tendencia
-            </div>
-            <div style={{
-              fontSize: '12px',
-              color: tendenciaInfo.color,
-              fontWeight: '500'
-            }}>
-              {tendencia}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Nota informativa */}
-      <div style={{
-        marginTop: '12px',
-        padding: '8px 12px',
-        background: 'rgba(102, 126, 234, 0.1)',
+        padding: '12px',
+        background: 'rgba(15, 23, 42, 0.5)',
         borderRadius: '8px',
-        border: '1px solid rgba(102, 126, 234, 0.2)',
-        fontSize: '12px',
-        color: '#374151',
-        textAlign: 'center'
+        border: '1px solid rgba(75, 85, 99, 0.2)'
       }}>
-        💡 Estas estadísticas se basan en los registros de esta sesión
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+          gap: '8px',
+          fontSize: '12px'
+        }}>
+          <div>
+            <span style={{ color: '#9ca3af' }}>Último análisis:</span>
+            <span style={{ color: '#f3f4f6', marginLeft: '4px' }}>
+              {estadisticas.ultimoAnalisis ? new Date(estadisticas.ultimoAnalisis).toLocaleString('es-ES') : 'N/A'}
+            </span>
+          </div>
+          
+          <div>
+            <span style={{ color: '#9ca3af' }}>Rango de frecuencias:</span>
+            <span style={{ color: '#f3f4f6', marginLeft: '4px' }}>
+              {estadisticas.minimaFrecuencia} - {estadisticas.maximaFrecuencia} BPM
+            </span>
+          </div>
+          
+          <div>
+            <span style={{ color: '#9ca3af' }}>Variabilidad:</span>
+            <span style={{ color: '#f3f4f6', marginLeft: '4px' }}>
+              {estadisticas.maximaFrecuencia - estadisticas.minimaFrecuencia} BPM
+            </span>
+          </div>
+        </div>
       </div>
     </div>
   );
 }
 
-export default EstadisticasCard; 
+export default EstadisticasCard;
