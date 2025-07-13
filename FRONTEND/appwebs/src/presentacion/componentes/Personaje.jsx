@@ -46,7 +46,7 @@ const Personaje = () => {
   }, [lastScrollY]);
 
   return (
-    <section className="flex justify-center mt-20 md:mt-10">
+    <section className="flex justify-center mt-20 md:mt-10 overflow-hidden">
       <motion.div
         className="grid grid-cols-1 md:grid-cols-2 w-full"
         initial={{ opacity: 1, y: 0 }}
@@ -55,21 +55,47 @@ const Personaje = () => {
       >
         <div className="p-6 sm:p-8 md:p-10 lg:p-16 xl:p-20">
           <motion.img
-            variants={slideUp(0.4)}
-            initial="initial"
-            animate="animate"
+            initial={{ opacity: 0, y: 60 }}
+            animate={{ 
+              opacity: 1, 
+              y: [0, -5, 0],
+              transition: {
+                opacity: {
+                  duration: 0.5,
+                  delay: 0.4,
+                  ease: [0.25, 0.25, 0.25, 0.75],
+                },
+                y: {
+                  duration: 4,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }
+              }
+            }}
             src={Logo}
             alt="logo del Juego"
-            className="mb-4"
+            className="mb-4 cursor-pointer transition-all duration-500 ease-out hover:scale-110 hover:shadow-2xl hover:rotate-2"
+            whileHover={{
+              scale: 1.1,
+              rotate: 2,
+              transition: { 
+                duration: 0.6,
+                ease: "easeOut"
+              }
+            }}
           />
           <motion.p
             variants={slideUp(0.4)}
             initial="initial"
             animate="animate"
-            className="py-10 text-white text-base md:text-xl leading-relaxed" 
+            className="py-10 text-white text-base md:text-xl leading-relaxed text-center font-bold tracking-wide" 
+            style={{
+              textShadow: '0 0 10px rgba(255, 255, 255, 0.3), 0 0 20px rgba(255, 255, 255, 0.2)',
+            }}
           >
-            Lorem ipsum dolor sit amet consectetur adipisicing elit.
-            Cumque, quos. Ipsa illum consectetur cum, quisquam laboriosam adipisci quo nulla. Fugiat et molestiae magni illum ea quidem quasi maxime iusto soluta?
+            Bienvenido a Salus Monitor, tu sistema de monitoreo de signos vitales en tiempo real. 
+            Medimos y supervisamos pulsos cardíacos de manera precisa, con un chatbot inteligente 
+            que te ayuda a interpretar los datos y responder tus consultas.
           </motion.p>
           <motion.div
             variants={slideUp(1.1)}
@@ -95,11 +121,11 @@ const Personaje = () => {
           </motion.div>
         </div>
 
-        <div className="p-2 sm:p-4 md:p-6 lg:p-8 xl:p-10 flex justify-center items-center">
+        <div className="p-2 sm:p-4 md:p-6 lg:p-8 xl:p-10 flex justify-center items-center overflow-hidden">
          <motion.img
   src={PersonajeImg}
   alt="Personaje"
-  className="w-full h-auto max-w-lg md:max-w-xl lg:max-w-2xl xl:max-w-3xl cursor-pointer transition-all duration-500 ease-out hover:scale-105 hover:shadow-xl"
+  className="w-full h-auto max-w-lg md:max-w-xl lg:max-w-2xl xl:max-w-3xl cursor-pointer transition-all duration-500 ease-out hover:scale-110 hover:shadow-2xl"
   style={{
     WebkitMaskImage: 'linear-gradient(to bottom, black 80%, transparent)',
     maskImage: 'linear-gradient(to top, black 80%, transparent)',
@@ -107,18 +133,40 @@ const Personaje = () => {
     maskRepeat: 'no-repeat',
   }}
   animate={{
-    y: [0, -15, 0],
+    y: [0, -20, 0],
+    rotate: [0, 1, -1, 0],
+    scale: [1, 1.02, 1],
   }}
   transition={{
-    duration: 3,
+    duration: 4,
     repeat: Infinity,
     ease: "easeInOut",
+    y: {
+      duration: 4,
+      ease: "easeInOut",
+    },
+    rotate: {
+      duration: 6,
+      ease: "easeInOut",
+    },
+    scale: {
+      duration: 3,
+      ease: "easeInOut",
+    }
   }}
   whileHover={{
-    scale: 1.05,
-    rotate: 2,
+    scale: 1.1,
+    rotate: 5,
+    y: -10,
     transition: { 
-      duration: 0.6,
+      duration: 0.8,
+      ease: "easeOut"
+    }
+  }}
+  whileTap={{
+    scale: 0.95,
+    transition: { 
+      duration: 0.2,
       ease: "easeOut"
     }
   }}
