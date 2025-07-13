@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { analizarPulso, obtenerEstadisticas, validarEntrada } from '../utils/analizarpulso';
-import apiService from '../services/apiService';
+import apiService from '../Componentes/services/apiService';
 
 export const useChatLogic = () => {
   const [mensajes, setMensajes] = useState([
@@ -97,8 +97,13 @@ export const useChatLogic = () => {
 
   // Función para agregar mensaje al historial
   const agregarAlHistorial = useCallback((analisis) => {
-    if (configuracion.guardarHistorial && analisis.valor && !analisis.error) {
-      setHistorial(prev => [...prev, analisis]);
+    console.log('Intentando agregar al historial:', analisis);
+    if (configuracion.guardarHistorial && typeof analisis.valor === 'number' && !isNaN(analisis.valor) && !analisis.error) {
+      setHistorial(prev => {
+        const nuevo = [...prev, analisis];
+        console.log('Historial actualizado:', nuevo);
+        return nuevo;
+      });
     }
   }, [configuracion.guardarHistorial]);
 
@@ -188,6 +193,17 @@ export const useChatLogic = () => {
       
       // Agregar al historial si es válido
       agregarAlHistorial(analisis);
+
+      // Guardar en el backend el análisis, tanto si hay paciente seleccionado como si no
+      try {
+        await apiService.recordChatAnalysis(
+          selectedPatient ? selectedPatient.id : null,
+          analisis,
+          selectedPatient ? 'chat-pulso' : 'chat'
+        );
+      } catch (e) {
+        console.error('No se pudo guardar el análisis en el backend:', e);
+      }
       
       return {
         id: Date.now() + 1,
@@ -207,7 +223,7 @@ export const useChatLogic = () => {
     } finally {
       setIsTyping(false);
     }
-  }, [configuracion.tiempoRespuesta, agregarAlHistorial, manejarError]);
+  }, [configuracion.tiempoRespuesta, agregarAlHistorial, manejarError, selectedPatient]);
 
   // Función principal para enviar mensaje
   const enviarMensaje = useCallback(async () => {

@@ -385,7 +385,7 @@ function App() {
         background: 'linear-gradient(180deg, #0f172a 0%, #1e293b 100%)',
         scrollBehavior: 'smooth'
       }}>
-        {mensajes.map((m, index) => (
+        {mensajes.filter(m => m && typeof m === 'object').map((m, index) => (
           <div key={m.id} className={m.usuario ? 'slide-out' : 'slide-in'} style={{ animationDelay: `${index * 0.1}s` }}>
             <ChatMessage mensaje={m} />
           </div>

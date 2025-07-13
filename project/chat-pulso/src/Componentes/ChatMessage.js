@@ -2,6 +2,11 @@ import React from 'react';
 import EstadoCard from './EstadoCard';
 
 function ChatMessage({ mensaje }) {
+  // Validación para evitar errores cuando mensaje es undefined o null
+  if (!mensaje) {
+    return null; // No renderizar nada si no hay mensaje
+  }
+
   const isUsuario = mensaje.usuario;
   
   return (
