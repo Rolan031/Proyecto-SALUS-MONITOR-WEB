@@ -267,6 +267,13 @@ function InputArea({ inputTexto, setInputTexto, presionarEnter, enviarMensaje })
   );
 }
 
+const DEVICE_IDS = [
+  'ESP32_001',
+  'ESP32_002',
+  'PRUEBA_123',
+  // Agrega aquí los deviceId existentes que quieras mostrar
+];
+
 const VitalMonitor = ({ patient }) => {
   const {
     vitals,
@@ -280,8 +287,11 @@ const VitalMonitor = ({ patient }) => {
 
   const [notification, setNotification] = useState(null);
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [selectedDeviceId, setSelectedDeviceId] = useState(DEVICE_IDS[0]);
 
-  const latestVital = vitals.length > 0 ? vitals[vitals.length - 1] : null;
+  // Filtrar los vitals por el deviceId seleccionado
+  const filteredVitals = vitals.filter(v => v.deviceId === selectedDeviceId);
+  const latestVital = filteredVitals.length > 0 ? filteredVitals[filteredVitals.length - 1] : null;
 
   const showNotification = (message, type = 'info') => {
     setNotification({ message, type });
@@ -353,6 +363,20 @@ const VitalMonitor = ({ patient }) => {
         </div>
       </div>
 
+      {/* Selector de dispositivo */}
+      <div className="w-full max-w-5xl flex flex-row items-center justify-center mt-4 mb-2">
+        <label className="text-white mr-3 font-semibold">Dispositivo:</label>
+        <select
+          value={selectedDeviceId}
+          onChange={e => setSelectedDeviceId(e.target.value)}
+          className="px-4 py-2 rounded-lg bg-[#23283a] text-[#1aff8b] border border-[#1aff8b]/40 focus:outline-none"
+        >
+          {DEVICE_IDS.map(id => (
+            <option key={id} value={id}>{id}</option>
+          ))}
+        </select>
+      </div>
+
       {/* Main cards layout - Sin gap */}
       <div className="w-full max-w-5xl flex flex-row justify-center items-stretch z-10 mb-1">
         {/* Card BPM */}
@@ -392,7 +416,7 @@ const VitalMonitor = ({ patient }) => {
             </div>
             {/* Datos recopilados */}
             <div className="flex flex-col items-center">
-              <div className="text-[#1aff8b] text-2xl font-bold mb-1">{vitals.length}</div>
+              <div className="text-[#1aff8b] text-2xl font-bold mb-1">{filteredVitals.length}</div>
               <div className="text-[#b6eada] text-lg">DATOS RECOPILADOS</div>
             </div>
           </div>
