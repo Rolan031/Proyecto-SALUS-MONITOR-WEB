@@ -62,23 +62,52 @@ export class VitalSignsWebSocket {
   }
 
   async handleVitalData(data, deviceId) {
-    // Buscar el paciente asociado al deviceId
-    const device = await this.prisma.device.findUnique({
-      where: { deviceId }
-    });
-    if (!device || !device.patientId) {
-      throw new Error('Dispositivo no asociado a ningún paciente');
-    }
-    const vitalSign = await this.prisma.signosVitales.create({
-      data: {
-        patientId: device.patientId,
-        heartRate: data.heartRate,
-        source: 'sensor',
-        informe: `Dispositivo: ${deviceId}`
-      }
-    });
-    return vitalSign;
+  // 🔥 CAMBIO CLAVE: Usar deviceId del payload si existe
+  const actualDeviceId = data.deviceId || deviceId;
+  
+  console.log('🔍 Buscando dispositivo con ID:', actualDeviceId);
+  
+  // Buscar el paciente asociado al deviceId
+  const device = await this.prisma.device.findUnique({
+    where: { deviceId: actualDeviceId }
+  });
+  
+  console.log('📱 Dispositivo encontrado:', device);
+  
+  if (!device || !device.patientId) {
+    throw new Error(`Dispositivo ${actualDeviceId} no asociado a ningún paciente`);
   }
+  
+  const vitalSign = await this.prisma.signosVitales.create({
+    data: {
+      patientId: device.patientId,
+      heartRate: data.heartRate,
+      //source: 'sensor',
+      informe: `Dispositivo: ${actualDeviceId}`
+    }
+  });
+  
+  console.log('✅ Signo vital creado:', vitalSign);
+
+  // 🔥 EMITIR A TODOS LOS CLIENTES
+  const message = JSON.stringify({
+    type: 'VITAL_DATA',
+    payload: {
+      deviceId: actualDeviceId,
+      heartRate: vitalSign.heartRate,
+      patientId: vitalSign.patientId,
+      timestamp: vitalSign.timestamp,
+      id: vitalSign.id
+    }
+  });
+  this.wss.clients.forEach(client => {
+    if (client.readyState === 1) { // 1 = OPEN
+      client.send(message);
+    }
+  });
+
+  return vitalSign;
+}
 
   async shutdown() {
     await this.prisma.$disconnect();

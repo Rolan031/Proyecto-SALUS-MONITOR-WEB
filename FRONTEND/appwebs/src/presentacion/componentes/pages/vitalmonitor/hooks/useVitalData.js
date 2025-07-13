@@ -36,9 +36,10 @@ export const useVitalData = (patientId) => {
       dispatch({ type: 'SET_ERROR', payload: err.message || 'WebSocket error' });
     });
 
+    // Nuevo handler: acepta mensajes de tipo VITAL_DATA y agrega el heartRate recibido
     client.on('message', (data) => {
-      if (data?.patientId === patientId) {
-        dispatch({ type: 'ADD_VITAL', payload: data });
+      if (data?.type === 'VITAL_DATA' && data?.payload?.deviceId) {
+        dispatch({ type: 'ADD_VITAL', payload: { ...data.payload, timestamp: Date.now() } });
       }
     });
 
@@ -68,6 +69,11 @@ export const useVitalData = (patientId) => {
       });
     }
   }, [wsClient, currentSession, dispatch]);
+
+  // Limpiar vitals al cambiar de paciente
+  useEffect(() => {
+    dispatch({ type: 'SET_VITALS', payload: [] });
+  }, [patientId, dispatch]);
 
   useEffect(() => {
     return () => {

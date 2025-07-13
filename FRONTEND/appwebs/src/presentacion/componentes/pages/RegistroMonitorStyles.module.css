@@ -1,0 +1,129 @@
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
+
+/* Fondo oscuro base - SOLO para componentes de registro y monitoreo */ 
+.customStyles {
+  background: #0a0f1c;
+  color: white;
+  font-family: 'Poppins', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+  overflow-y: auto;
+  position: relative;
+}
+
+/* Scrollbar moderno - SOLO para componentes con .customStyles */
+.customStyles::-webkit-scrollbar {
+  width: 12px;
+}
+
+.customStyles::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+.customStyles::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #71148a, #8ee1ef);
+  border-radius: 10px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.customStyles::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #059669, #0891b2);
+}
+
+.customStyles::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Scrollbar personalizado para componentes específicos */
+.customStyles .custom-scrollbar::-webkit-scrollbar {
+  width: 14px;
+}
+
+.customStyles .custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  margin: 4px;
+}
+
+.customStyles .custom-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #be7bea, #06b6d4, #8b5cf6);
+  border-radius: 12px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.customStyles .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #e092f0, #65bdd3, #7840d8);
+  transform: scale(1.05);
+}
+
+.customStyles .custom-scrollbar::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Forzar scrollbar visible */
+.customStyles html {
+  overflow-y: scroll;
+}
+
+/* Aplicar Poppins a todo el contenido dentro de .customStyles */
+.customStyles * {
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Estilos específicos para iconos de Font Awesome en estos componentes */
+.customStyles .fas,
+.customStyles .far,
+.customStyles .fab {
+  font-family: 'Font Awesome 6 Free', 'Font Awesome 6 Pro', 'Font Awesome 6 Brands', sans-serif;
+  font-weight: 900;
+}
+
+.customStyles .far {
+  font-weight: 400;
+}
+
+.customStyles .fab {
+  font-weight: 400;
+}
+
+/* Partículas - SOLO dentro de .customStyles */
+.customStyles .particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background-color: #00ff88;
+  border-radius: 50%;
+  opacity: 0.3;
+  animation: float 6s infinite ease-in-out;
+}
+
+/* Animación flotante */
+@keyframes float {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 0.3;
+  }
+  50% {
+    transform: translateY(-30px) scale(1.4);
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 0.3;
+  }
+}
+
+/* Estilos adicionales para mejorar la experiencia visual */
+.customStyles .bg-gradient-overlay {
+  background: linear-gradient(135deg, rgba(26, 255, 139, 0.1), rgba(142, 225, 239, 0.1));
+}
+
+.customStyles .glow-effect {
+  box-shadow: 0 0 20px rgba(26, 255, 139, 0.3);
+}
+
+.customStyles .text-glow {
+  text-shadow: 0 0 10px rgba(26, 255, 139, 0.5);
+} 
