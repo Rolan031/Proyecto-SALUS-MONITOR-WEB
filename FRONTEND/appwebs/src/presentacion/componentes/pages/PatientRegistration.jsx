@@ -37,7 +37,7 @@ const PatientRegistration = ({ onRegister }) => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-gray-900/80 p-4 rounded-2xl shadow-xl border border-green-500/20 max-w-md w-full mx-auto"
+      className="bg-[#23283a]/90 px-8 py-6 rounded-2xl shadow-2xl max-w-md w-full mx-auto border-none outline-none"
     >
       <h2 className="text-xl font-bold text-white mb-3 flex items-center">
         <i className="fas fa-user-plus mr-2 text-green-400" />
