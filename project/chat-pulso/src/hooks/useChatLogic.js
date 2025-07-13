@@ -1,11 +1,12 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { analizarPulso, obtenerEstadisticas, validarEntrada } from '../utils/analizarpulso';
+import apiService from '../services/apiService';
 
 export const useChatLogic = () => {
   const [mensajes, setMensajes] = useState([
     { 
       id: 1, 
-      texto: '¡Hola! Soy tu asistente de salud cardíaca 💓\n\nEscribe tu frecuencia cardíaca y te ayudaré a interpretarla.\n\n💡 Puedes escribir:\n• Solo números: "75"\n• Con contexto: "Mi pulso es 80 después del ejercicio"\n• Especificar edad: "Mi bebé tiene 120 pulsaciones"', 
+      texto: '¡Hola! Soy tu asistente de salud cardíaca 💓\n\nEscribe tu frecuencia cardíaca y te ayudaré a interpretarla.\n\n💡 Puedes escribir:\n• Solo números: "75"\n• Con contexto: "Mi pulso es 80 después del ejercicio"\n• Especificar edad: "Mi bebé tiene 120 pulsaciones"\n• O seleccionar un paciente del backend para analizar sus datos', 
       usuario: false,
       timestamp: new Date().toISOString()
     }
@@ -19,8 +20,14 @@ export const useChatLogic = () => {
   const [configuracion, setConfiguracion] = useState({
     tiempoRespuesta: 1000,
     mostrarEstadisticas: true,
-    guardarHistorial: true
+    guardarHistorial: true,
+    conectarBackend: true
   });
+  
+  // Estados para integración con backend
+  const [backendConnected, setBackendConnected] = useState(false);
+  const [selectedPatient, setSelectedPatient] = useState(null);
+  const [backendData, setBackendData] = useState(null);
   
   const messagesEndRef = useRef(null);
   const typingTimeoutRef = useRef(null);
@@ -43,7 +50,7 @@ export const useChatLogic = () => {
     }
   }, [historial, configuracion.mostrarEstadisticas]);
 
-  // Función para limpiar timeouts
+  // Efecto para limpiar timeouts
   useEffect(() => {
     return () => {
       if (typingTimeoutRef.current) {
@@ -51,6 +58,42 @@ export const useChatLogic = () => {
       }
     };
   }, []);
+
+  // Efecto para conectar al backend
+  useEffect(() => {
+    if (configuracion.conectarBackend) {
+      apiService.connectWebSocket('chat-pulso');
+      
+      // Escuchar cambios de conexión
+      const checkConnection = () => {
+        const status = apiService.getConnectionStatus();
+        setBackendConnected(status.isConnected);
+      };
+
+      const interval = setInterval(checkConnection, 2000);
+      
+      // Escuchar datos del backend
+      apiService.onMessage('VITAL_DATA', handleBackendData);
+      apiService.onMessage('REALTIME_DATA', handleBackendData);
+
+      return () => {
+        clearInterval(interval);
+        apiService.offMessage('VITAL_DATA', handleBackendData);
+        apiService.offMessage('REALTIME_DATA', handleBackendData);
+      };
+    }
+  }, [configuracion.conectarBackend]);
+
+  // Función para manejar datos del backend
+  const handleBackendData = useCallback((data) => {
+    console.log('📊 Datos del backend recibidos:', data);
+    setBackendData(data);
+    
+    // Si hay un paciente seleccionado, analizar automáticamente
+    if (selectedPatient && data.current) {
+      analizarDatosBackend(data);
+    }
+  }, [selectedPatient]);
 
   // Función para agregar mensaje al historial
   const agregarAlHistorial = useCallback((analisis) => {
@@ -91,6 +134,45 @@ export const useChatLogic = () => {
       return null;
     }
   }, [manejarError]);
+
+  // Función para analizar datos del backend
+  const analizarDatosBackend = useCallback(async (data) => {
+    try {
+      setIsTyping(true);
+      
+      // Simular tiempo de procesamiento
+      await new Promise(resolve => {
+        typingTimeoutRef.current = setTimeout(resolve, configuracion.tiempoRespuesta);
+      });
+
+      const mensaje = `📊 **Análisis de datos del paciente ${selectedPatient?.name || selectedPatient?.id}**\n\n` +
+        `Frecuencia cardíaca actual: **${data.current} BPM**\n` +
+        `Promedio: **${data.average} BPM**\n` +
+        `Rango: **${data.min} - ${data.max} BPM**\n` +
+        `Total de registros: **${data.totalRecords}**\n\n` +
+        `Última actualización: ${new Date(data.lastUpdate).toLocaleString('es-ES')}`;
+
+      const analisis = analizarPulso(data.current.toString());
+      
+      const respuestaBot = {
+        id: Date.now() + 1,
+        texto: mensaje,
+        usuario: false,
+        ...analisis,
+        valor: data.current,
+        source: 'backend',
+        patientId: selectedPatient?.id
+      };
+
+      setMensajes(prev => [...prev, respuestaBot]);
+      agregarAlHistorial(analisis);
+      
+    } catch (error) {
+      manejarError(error);
+    } finally {
+      setIsTyping(false);
+    }
+  }, [selectedPatient, configuracion.tiempoRespuesta, agregarAlHistorial, manejarError]);
 
   // Función para generar respuesta del bot
   const generarRespuestaBot = useCallback(async (texto) => {
@@ -170,6 +252,8 @@ export const useChatLogic = () => {
     const datos = {
       historial,
       estadisticas,
+      backendData,
+      selectedPatient,
       fecha: new Date().toISOString(),
       totalMensajes: mensajes.length
     };
@@ -181,7 +265,7 @@ export const useChatLogic = () => {
     a.download = `salus-monitor-${new Date().toISOString().split('T')[0]}.json`;
     a.click();
     URL.revokeObjectURL(url);
-  }, [historial, estadisticas, mensajes.length]);
+  }, [historial, estadisticas, backendData, selectedPatient, mensajes.length]);
 
   // Función para obtener sugerencias basadas en el contexto
   const obtenerSugerencias = useCallback((texto) => {
@@ -203,9 +287,40 @@ export const useChatLogic = () => {
     if (textoLower.includes('bebé') || textoLower.includes('niño')) {
       sugerencias.push('👶 Los bebés tienen frecuencias más altas (80-160 BPM)');
     }
+
+    // Sugerencias específicas del backend
+    if (backendConnected && selectedPatient) {
+      sugerencias.push(`📊 Analizando datos del paciente: ${selectedPatient.name || selectedPatient.id}`);
+    }
+    
+    if (backendConnected && !selectedPatient) {
+      sugerencias.push('🔌 Conectado al backend - Selecciona un paciente para analizar');
+    }
     
     return sugerencias;
-  }, []);
+  }, [backendConnected, selectedPatient]);
+
+  // Función para seleccionar paciente del backend
+  const seleccionarPaciente = useCallback(async (patientId) => {
+    try {
+      const analysis = await apiService.analyzeBackendVitals(patientId);
+      if (analysis.success) {
+        setSelectedPatient(analysis.data);
+        setBackendData(analysis.data);
+        await analizarDatosBackend(analysis.data);
+      }
+    } catch (error) {
+      manejarError(error);
+    }
+  }, [analizarDatosBackend, manejarError]);
+
+  // Función para recibir datos del backend
+  const recibirDatosBackend = useCallback((data) => {
+    setBackendData(data);
+    if (selectedPatient && data.current) {
+      analizarDatosBackend(data);
+    }
+  }, [selectedPatient, analizarDatosBackend]);
 
   return {
     // Estado
@@ -220,6 +335,11 @@ export const useChatLogic = () => {
     setConfiguracion,
     messagesEndRef,
     
+    // Estados del backend
+    backendConnected,
+    selectedPatient,
+    backendData,
+    
     // Funciones
     enviarMensaje,
     manejarTeclas,
@@ -228,7 +348,11 @@ export const useChatLogic = () => {
     obtenerSugerencias,
     procesarEntrada,
     
+    // Funciones del backend
+    seleccionarPaciente,
+    recibirDatosBackend,
+    
     // Utilidades
     scrollToBottom
   };
-}; 
+};
