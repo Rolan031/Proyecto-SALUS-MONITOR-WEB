@@ -1,104 +1,256 @@
+@import "tailwindcss";
 @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
 
-/* Fondo oscuro base */ 
+/* Estilos globales básicos - NO afectan a los componentes específicos */
 body {
-  background: #0a0f1c;
-  overflow-x: hidden;
-  overflow-y: auto;
-  color: white;
-  font-family: "Poppins", sans-serif;
+    font-family: "Poppins", sans-serif;
+    background-color: #000000;
+    margin: 0;
+    padding: 0;
 }
 
-/* Scrollbar moderno */
-::-webkit-scrollbar {
-  width: 12px;
-}
-
-::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #71148a, #8ee1ef);
-  border-radius: 10px;
-  border: 2px solid rgba(255, 255, 255, 0.1);
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #059669, #0891b2);
-}
-
-::-webkit-scrollbar-corner {
-  background: transparent;
-}
-/* Scrollbar personalizado para componentes específicos */
-.custom-scrollbar::-webkit-scrollbar {
-  width: 14px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 12px;
-  margin: 4px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #be7bea, #06b6d4, #8b5cf6);
-  border-radius: 12px;
-  border: 2px solid rgba(255, 255, 255, 0.1);
-  transition: all 0.3s ease;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #e092f0, #65bdd3, #7840d8);
-  transform: scale(1.05);
-}
-
-.custom-scrollbar::-webkit-scrollbar-corner {
-  background: transparent;
-}
-
-/* Forzar scrollbar visible */
-html {
-  overflow-y: scroll;
-}
-
-body {
-  min-height: 100vh;
-}
-
-/* Aplicar Poppins a todo el contenido */
+/* Asegurar que los estilos globales no interfieran con los componentes específicos */
 * {
-  font-family: 'Poppins', sans-serif;
+    box-sizing: border-box;
 }
 
-/* Partículas */
-.particle {
-  position: absolute;
-  width: 4px;
-  height: 4px;
-  background-color: #00ff88;
-  border-radius: 50%;
-  opacity: 0.3;
-  animation: float 6s infinite ease-in-out;
+/* ===== ESTILOS ESPECÍFICOS PARA REGISTRO Y MONITOREO ===== */
+
+/* Clase principal para encapsular estilos */
+.salus-register-monitor {
+  background: #0a0f1c !important;
+  color: white !important;
+  font-family: 'Poppins', sans-serif !important;
+  min-height: 100vh !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  position: relative !important;
 }
 
-/* Animación flotante */
-@keyframes float {
+/* ===== GRADIENTE ANIMADO MODERNO PARA REGISTRO ===== */
+.salus-register-monitor {
+  background: linear-gradient(-45deg, #0a0f1c, #0d1b2a, #1a2a3a, #0f1f2e, #0a0f1c) !important;
+  background-size: 400% 400% !important;
+  animation: gradientShift 8s ease infinite !important;
+}
+
+@keyframes gradientShift {
   0% {
-    transform: translateY(0) scale(1);
-    opacity: 0.3;
+    background-position: 0% 50% !important;
+  }
+  25% {
+    background-position: 100% 50% !important;
   }
   50% {
-    transform: translateY(-30px) scale(1.4);
-    opacity: 0.6;
+    background-position: 100% 100% !important;
+  }
+  75% {
+    background-position: 0% 100% !important;
   }
   100% {
-    transform: translateY(0) scale(1);
+    background-position: 0% 50% !important;
+  }
+}
+
+/* Efecto de overlay adicional para profundidad */
+.salus-register-monitor::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  background: radial-gradient(ellipse at center, rgba(26, 255, 139, 0.05) 0%, transparent 70%) !important;
+  pointer-events: none !important;
+  z-index: 1 !important;
+}
+
+/* Scrollbar moderno - SOLO para componentes con .salus-register-monitor */
+.salus-register-monitor::-webkit-scrollbar {
+  width: 12px !important;
+}
+
+.salus-register-monitor::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-radius: 10px !important;
+}
+
+.salus-register-monitor::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #71148a, #8ee1ef) !important;
+  border-radius: 10px !important;
+  border: 2px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.salus-register-monitor::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #059669, #0891b2) !important;
+}
+
+.salus-register-monitor::-webkit-scrollbar-corner {
+  background: transparent !important;
+}
+
+/* Scrollbar personalizado para componentes específicos */
+.salus-register-monitor .custom-scrollbar::-webkit-scrollbar {
+  width: 14px !important;
+}
+
+.salus-register-monitor .custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-radius: 12px !important;
+  margin: 4px !important;
+}
+
+.salus-register-monitor .custom-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #be7bea, #06b6d4, #8b5cf6) !important;
+  border-radius: 12px !important;
+  border: 2px solid rgba(255, 255, 255, 0.1) !important;
+  transition: all 0.3s ease !important;
+}
+
+.salus-register-monitor .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #e092f0, #65bdd3, #7840d8) !important;
+  transform: scale(1.05) !important;
+}
+
+.salus-register-monitor .custom-scrollbar::-webkit-scrollbar-corner {
+  background: transparent !important;
+}
+
+/* Aplicar Poppins a todo el contenido dentro de .salus-register-monitor */
+.salus-register-monitor * {
+  font-family: 'Poppins', sans-serif !important;
+}
+
+/* Estilos específicos para iconos de Font Awesome en estos componentes */
+.salus-register-monitor .fas,
+.salus-register-monitor .far,
+.salus-register-monitor .fab {
+  font-family: 'Font Awesome 6 Free', 'Font Awesome 6 Pro', 'Font Awesome 6 Brands', sans-serif !important;
+  font-weight: 900 !important;
+}
+
+.salus-register-monitor .far {
+  font-weight: 400 !important;
+}
+
+.salus-register-monitor .fab {
+  font-weight: 400 !important;
+}
+
+/* ===== PARTÍCULAS FLUIDAS PARA REGISTRO Y MONITOREO ===== */
+
+/* Contenedor de partículas */
+.salus-register-monitor .particle-container {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  overflow: hidden !important;
+  pointer-events: none !important;
+  z-index: 2 !important;
+}
+
+/* Partículas individuales con movimiento fluido */
+.salus-register-monitor .particle {
+  position: absolute !important;
+  width: 3px !important;
+  height: 3px !important;
+  background: linear-gradient(45deg, #00ff88, #1aff8b, #00e676) !important;
+  border-radius: 50% !important;
+  opacity: 0.6 !important;
+  box-shadow: 0 0 6px rgba(0, 255, 136, 0.8) !important;
+  animation: floatFluid 8s infinite ease-in-out !important;
+}
+
+/* Animación fluida mejorada */
+@keyframes floatFluid {
+  0% {
+    transform: translateY(0px) translateX(0px) scale(1);
+    opacity: 0.3;
+  }
+  25% {
+    transform: translateY(-20px) translateX(10px) scale(1.2);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translateY(-40px) translateX(-5px) scale(1.5);
+    opacity: 0.9;
+  }
+  75% {
+    transform: translateY(-20px) translateX(15px) scale(1.2);
+    opacity: 0.7;
+  }
+  100% {
+    transform: translateY(0px) translateX(0px) scale(1);
     opacity: 0.3;
   }
 }
+
+/* Variaciones de partículas para más dinamismo */
+.salus-register-monitor .particle:nth-child(3n) {
+  width: 2px !important;
+  height: 2px !important;
+  background: linear-gradient(45deg, #1aff8b, #00ff88) !important;
+  animation-duration: 10s !important;
+  animation-delay: 1s !important;
+}
+
+.salus-register-monitor .particle:nth-child(3n+1) {
+  width: 4px !important;
+  height: 4px !important;
+  background: linear-gradient(45deg, #00e676, #1aff8b) !important;
+  animation-duration: 12s !important;
+  animation-delay: 2s !important;
+}
+
+.salus-register-monitor .particle:nth-child(3n+2) {
+  width: 3px !important;
+  height: 3px !important;
+  background: linear-gradient(45deg, #1aff8b, #00ff88, #00e676) !important;
+  animation-duration: 9s !important;
+  animation-delay: 0.5s !important;
+}
+
+/* Efecto de brillo adicional */
+.salus-register-monitor .particle::before {
+  content: '' !important;
+  position: absolute !important;
+  top: -2px !important;
+  left: -2px !important;
+  right: -2px !important;
+  bottom: -2px !important;
+  background: radial-gradient(circle, rgba(0, 255, 136, 0.3) 0%, transparent 70%) !important;
+  border-radius: 50% !important;
+  animation: glowPulse 4s infinite ease-in-out !important;
+}
+
+@keyframes glowPulse {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.2);
+  }
+}
+
+/* Estilos adicionales para mejorar la experiencia visual */
+.salus-register-monitor .bg-gradient-overlay {
+  background: linear-gradient(135deg, rgba(26, 255, 139, 0.1), rgba(142, 225, 239, 0.1)) !important;
+}
+
+.salus-register-monitor .glow-effect {
+  box-shadow: 0 0 20px rgba(26, 255, 139, 0.3) !important;
+}
+
+.salus-register-monitor .text-glow {
+  text-shadow: 0 0 10px rgba(26, 255, 139, 0.5) !important;
+}
+
+
+
+
+
+

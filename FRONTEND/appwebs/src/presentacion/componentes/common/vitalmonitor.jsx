@@ -245,19 +245,32 @@ function InputArea({ inputTexto, setInputTexto, presionarEnter, enviarMensaje })
         <button
           onClick={enviarMensaje}
           style={{
-            padding: '10px 16px',
-            background: '#1aff8b',
+            padding: '10px 20px',
+            background: 'linear-gradient(90deg, #1aff8b 0%, #13c77b 100%)',
             color: '#10151f',
             border: 'none',
             borderRadius: '18px',
             cursor: 'pointer',
-            fontSize: '14px',
+            fontSize: '16px',
             fontWeight: 'bold',
-            boxShadow: '0 2px 8px #1aff8b33',
-            transition: 'transform 0.2s ease'
+            boxShadow: '0 4px 16px #1aff8b55',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            transition: 'all 0.25s cubic-bezier(.4,1.4,.6,1)'
+          }}
+          onMouseOver={e => {
+            e.currentTarget.style.transform = 'scale(1.08)';
+            e.currentTarget.style.background = 'linear-gradient(90deg, #13c77b 0%, #1aff8b 100%)';
+            e.currentTarget.style.boxShadow = '0 6px 24px #1aff8b99';
+          }}
+          onMouseOut={e => {
+            e.currentTarget.style.transform = 'scale(1)';
+            e.currentTarget.style.background = 'linear-gradient(90deg, #1aff8b 0%, #13c77b 100%)';
+            e.currentTarget.style.boxShadow = '0 4px 16px #1aff8b55';
           }}
         >
-          📤 Enviar
+          <span style={{fontSize:'1.7em'}}>📤</span>
         </button>
       </div>
       <div style={{ textAlign: 'center', marginTop: '10px', fontSize: '12px', color: '#b6eada' }}>
@@ -322,7 +335,7 @@ const VitalMonitor = ({ patient }) => {
   };
 
   return (
-    <div className="min-h-screen w-full flex flex-col justify-between items-center relative overflow-y-auto custom-scrollbar" style={{ background: 'radial-gradient(ellipse at 70% 10%, #181e2a 60%, #10151f 100%)' }}>
+    <div className="min-h-screen w-full flex flex-col justify-between items-center relative overflow-y-auto custom-scrollbar">
       {/* Partículas decorativas */}
       <div className="absolute inset-0 z-0 pointer-events-none">
         <svg width="100%" height="100%" className="absolute inset-0" style={{ opacity: 0.18 }}>
@@ -419,27 +432,36 @@ const VitalMonitor = ({ patient }) => {
           className="fixed bottom-6 right-6 z-50 w-16 h-16 rounded-full bg-[#1aff8b] shadow-2xl flex items-center justify-center hover:bg-[#13c77b] transition-all duration-200 border-4 border-[#23283a]"
           style={{boxShadow:'0 4px 32px #1aff8b55'}}
           title="Abrir chat bot"
-          onClick={() => setIsChatOpen(true)}
+          onClick={() => {
+            setIsChatOpen(true);
+            // Prevenir scroll al abrir el chat
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
         >
-          <i className="fas fa-robot text-3xl text-[#10151f]"></i>
+          <img
+            src="/src/assets/1._Design3x redimensionado sinfondo.png"
+            alt="Abrir chat bot"
+            className="transition-transform duration-300 ease-in-out hover:scale-110 hover:shadow-2xl"
+            style={{ width: '44px', height: '44px', borderRadius: '50%', border: '2px solid #10151f', background: 'none', objectFit: 'cover' }}
+          />
         </button>
       )}
 
       {/* Modal flotante de chat bot */}
       {isChatOpen && (
-        <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
+        <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end" style={{overflow: 'visible'}}>
           <div
-            className="relative w-[320px] max-w-[90vw] h-[420px] max-h-[80vh] bg-[#23283a]/90 backdrop-blur-2xl border border-[#1aff8b]/40 shadow-xl rounded-2xl flex flex-col animate-fadeIn"
+            className="relative w-[320px] max-w-[90vw] max-h-[80vh] bg-[#23283a]/90 backdrop-blur-2xl border border-[#1aff8b]/40 shadow-xl rounded-2xl flex flex-col-reverse animate-fadeIn overflow-y-auto"
             style={{boxShadow:'0 6px 32px #1aff8b33'}}
           >
             {/* Header del chat */}
             <div className="flex items-center justify-between px-3 py-2 border-b border-[#1aff8b]/10 bg-[#23283a]/95 rounded-t-2xl">
               <div className="flex items-center gap-2">
-                {/* Imagen pequeña del bot en el header (puedes cambiar la ruta y el tamaño aquí) */}
+                {/* Imagen pequeña del bot en el header */}
                 <img
-                  src="/SalusIMG/Icono header redimensionado no back.png" // Cambia aquí la ruta de la imagen del bot
+                  src="/src/assets/1._Design3x redimensionado sinfondo.png"
                   alt="Chatbot"
-                  style={{ width: '28px', height: '28px', borderRadius: '50%', border: '2px solid #1aff8b', background: '#10151f' }}
+                  style={{ width: '28px', height: '28px', borderRadius: '50%', border: '2px solid #1aff8b', background: 'none' }}
                 />
                 <span className="font-bold text-base text-white">Chat Bot</span>
               </div>
