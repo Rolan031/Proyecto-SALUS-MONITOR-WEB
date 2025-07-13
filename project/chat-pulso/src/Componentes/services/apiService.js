@@ -1,5 +1,3 @@
-// Servicio de API para conectar con el backend de Salus Monitor
-
 const API_BASE_URL = 'http://localhost:3000/api';
 const WS_URL = 'ws://localhost:3000/api/ws/vitals';
 
@@ -12,7 +10,7 @@ class ApiService {
     this.listeners = new Map();
   }
 
-  // ===== CONEXIÓN WEBSOCKET =====
+  //CONEXIÓN
   
   connectWebSocket(deviceId = 'chat-pulso') {
     try {
@@ -80,7 +78,7 @@ class ApiService {
     }
   }
 
-  // Registrar listeners para diferentes tipos de mensajes
+  // diferentes tipos de mensajes
   onMessage(type, callback) {
     if (!this.listeners.has(type)) {
       this.listeners.set(type, []);
@@ -99,7 +97,7 @@ class ApiService {
     }
   }
 
-  // ===== API REST =====
+  //API REST
 
   async makeRequest(endpoint, options = {}) {
     const url = `${API_BASE_URL}${endpoint}`;
@@ -125,7 +123,7 @@ class ApiService {
     }
   }
 
-  // ===== ENDPOINTS ESPECÍFICOS DEL CHAT =====
+  // ENDPOINTS ESPECÍFICOS DEL CHAT-PULSO
 
   // Analizar datos de signos vitales de un paciente
   async analyzeBackendVitals(patientId, limit = 10) {
@@ -161,7 +159,7 @@ class ApiService {
     return this.makeRequest(`/chat/realtime/${patientId}`);
   }
 
-  // ===== ENDPOINTS DE SIGNOS VITALES =====
+  //ENDPOINTS DE SIGNOS VITALES
 
   // Obtener signos vitales de un paciente
   async getVitalsByPatient(patientId, limit = 100) {
@@ -184,7 +182,7 @@ class ApiService {
     });
   }
 
-  // ===== ENDPOINTS DE PACIENTES =====
+  // ENDPOINTS DE PACIENTES
 
   // Obtener todos los pacientes
   async getPatients() {
@@ -204,7 +202,7 @@ class ApiService {
     });
   }
 
-  // ===== ENDPOINTS DE SESIONES =====
+  // ENDPOINTS DE SESIONES 
 
   // Obtener sesiones de un paciente
   async getSessions(patientId) {
@@ -219,7 +217,7 @@ class ApiService {
     });
   }
 
-  // ===== ENDPOINTS DE DISPOSITIVOS =====
+  // ENDPOINTS DE DISPOSITIVOS
 
   // Obtener dispositivos
   async getDevices() {
@@ -234,9 +232,9 @@ class ApiService {
     });
   }
 
-  // ===== FUNCIONES ESPECÍFICAS PARA EL CHAT =====
+  //FUNCIONES PARA EL CHAT
 
-  // Analizar datos de signos vitales del backend (versión mejorada)
+  // Analizar datos de signos vitales del backend
   async analyzeBackendVitalsEnhanced(patientId, limit = 10) {
     try {
       const analysis = await this.analyzeBackendVitals(patientId, limit);
@@ -316,7 +314,7 @@ class ApiService {
     return recommendations;
   }
 
-  // Buscar paciente por nombre o ID (versión mejorada)
+  // Buscar paciente por nombre o ID
   async searchPatient(query) {
     try {
       if (!query || query.trim() === '') {
@@ -331,7 +329,7 @@ class ApiService {
     }
   }
 
-  // Obtener datos en tiempo real del WebSocket
+  // Obtener datos en tiempo real
   async getRealTimeDataWebSocket(patientId) {
     return new Promise((resolve, reject) => {
       if (!this.isConnected) {
@@ -374,14 +372,14 @@ class ApiService {
     }
   }
 
-  // ===== UTILIDADES =====
+  // UTILIDADES
 
   // Verificar conexión
   isBackendConnected() {
     return this.isConnected;
   }
 
-  // Desconectar WebSocket
+  // Desconectar 
   disconnect() {
     if (this.ws) {
       this.ws.close();
