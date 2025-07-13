@@ -88,6 +88,24 @@ export class VitalSignsWebSocket {
   });
   
   console.log('✅ Signo vital creado:', vitalSign);
+
+  // 🔥 EMITIR A TODOS LOS CLIENTES
+  const message = JSON.stringify({
+    type: 'VITAL_DATA',
+    payload: {
+      deviceId: actualDeviceId,
+      heartRate: vitalSign.heartRate,
+      patientId: vitalSign.patientId,
+      timestamp: vitalSign.timestamp,
+      id: vitalSign.id
+    }
+  });
+  this.wss.clients.forEach(client => {
+    if (client.readyState === 1) { // 1 = OPEN
+      client.send(message);
+    }
+  });
+
   return vitalSign;
 }
 
