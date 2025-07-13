@@ -1,100 +1,357 @@
 import React, { useState } from 'react';
 import ChatMessage from './Componentes/ChatMessage';
 import InputArea from './Componentes/InputArea';
-import { analizarPulso } from './utils/analizarpulso';
+import EstadisticasCard from './Componentes/EstadisticasCard';
+import { useChatLogic } from './hooks/useChatLogic';
 
 function App() {
-  const [mensajes, setMensajes] = useState([
-    { id: 1, texto: 'Hola! Escribe tu pulso y te diré como estás', usuario: false }
-  ]);
-  const [inputTexto, setInputTexto] = useState('');
+  const {
+    mensajes,
+    inputTexto,
+    setInputTexto,
+    isTyping,
+    historial,
+    estadisticas,
+    errores,
+    configuracion,
+    setConfiguracion,
+    messagesEndRef,
+    enviarMensaje,
+    manejarTeclas,
+    limpiarHistorial,
+    exportarDatos,
+    obtenerSugerencias,
+    scrollToBottom
+  } = useChatLogic();
 
-  const enviarMensaje = () => {
-    if (inputTexto === '') return;
-
-    const nuevoMensajeUsuario = {
-      id: Date.now(),
-      texto: inputTexto,
-      usuario: true
-    };
-
-    const numeros = inputTexto.match(/\d+/);
-    let respuestaBot;
-
-    if (numeros) {
-      const analisis = analizarPulso(numeros[0]);
-      respuestaBot = {
-        id: Date.now() + 1,
-        texto: analisis.mensaje,
-        usuario: false,
-        ...analisis
-      };
-    } else {
-      respuestaBot = {
-        id: Date.now() + 1,
-        texto: 'No entiendo. Escribe solo números como: 75',
-        usuario: false
-      };
-    }
-
-    setMensajes([...mensajes, nuevoMensajeUsuario, respuestaBot]);
-    setInputTexto('');
-  };
-
-  const presionarEnter = (e) => {
-    if (e.key === 'Enter') enviarMensaje();
-  };
+  const [mostrarEstadisticas, setMostrarEstadisticas] = useState(false);
+  const [mostrarConfiguracion, setMostrarConfiguracion] = useState(false);
 
   return (
-    <div style={{
-      maxWidth: '400px',
-      margin: '20px auto',
-      borderRadius: '15px',
-      boxShadow: '0 10px 25px rgba(0,0,0,0.3)',
-      fontFamily: '"Roboto", "Open Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+    <div className="fade-in-up" style={{
+      maxWidth: '500px',
+      width: '100%',
+      margin: '0 auto',
+      borderRadius: '24px',
+      boxShadow: '0 20px 60px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.1)',
+      fontFamily: '"Inter", sans-serif',
       overflow: 'hidden',
-      background: '#1a1a1a'
+      background: 'rgba(255, 255, 255, 0.95)',
+      backdropFilter: 'blur(20px)',
+      border: '1px solid rgba(255, 255, 255, 0.2)'
     }}>
+      {/* Header mejorado */}
       <div style={{
-        background: 'linear-gradient(135deg, #00D4AA 0%, #00B894 100%)',
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
         color: 'white',
-        padding: '20px',
+        padding: '24px 20px',
         textAlign: 'center',
-        borderBottom: '1px solid rgba(255,255,255,0.1)'
+        position: 'relative',
+        overflow: 'hidden'
       }}>
-        <h2 style={{
-          margin: '0',
-          fontSize: '24px',
-          fontWeight: '600',
-          letterSpacing: '0.5px'
+        <div style={{
+          position: 'absolute',
+          top: '-50%',
+          left: '-50%',
+          width: '200%',
+          height: '200%',
+          background: 'radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%)',
+          animation: 'pulse 4s ease-in-out infinite'
+        }} />
+        
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: '12px'
         }}>
-          💓 Chat de Pulso
-        </h2>
+          <h2 style={{
+            margin: '0',
+            fontSize: '28px',
+            fontWeight: '700',
+            letterSpacing: '-0.5px',
+            position: 'relative',
+            zIndex: 1
+          }}>
+            💓 Salus Monitor
+          </h2>
+          
+          <div style={{ display: 'flex', gap: '8px', position: 'relative', zIndex: 1 }}>
+            <button
+              onClick={() => setMostrarEstadisticas(!mostrarEstadisticas)}
+              style={{
+                padding: '8px 12px',
+                background: 'rgba(255,255,255,0.2)',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontSize: '12px',
+                fontWeight: '500',
+                transition: 'all 0.2s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.background = 'rgba(255,255,255,0.3)';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.background = 'rgba(255,255,255,0.2)';
+              }}
+            >
+              📊 {mostrarEstadisticas ? 'Ocultar' : 'Estadísticas'}
+            </button>
+            
+            <button
+              onClick={() => setMostrarConfiguracion(!mostrarConfiguracion)}
+              style={{
+                padding: '8px 12px',
+                background: 'rgba(255,255,255,0.2)',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontSize: '12px',
+                fontWeight: '500',
+                transition: 'all 0.2s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.background = 'rgba(255,255,255,0.3)';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.background = 'rgba(255,255,255,0.2)';
+              }}
+            >
+              ⚙️ Config
+            </button>
+          </div>
+        </div>
+        
         <p style={{
-          margin: '5px 0 0 0',
-          fontSize: '14px',
+          margin: '8px 0 0 0',
+          fontSize: '15px',
           opacity: '0.9',
-          fontWeight: '400'
+          fontWeight: '400',
+          position: 'relative',
+          zIndex: 1
         }}>
-          Tu asistente de salud cardíaca
+          Tu asistente de salud cardíaca inteligente
         </p>
+        
+        <div style={{
+          position: 'absolute',
+          bottom: '0',
+          left: '0',
+          right: '0',
+          height: '1px',
+          background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)'
+        }} />
       </div>
 
+      {/* Panel de configuración */}
+      {mostrarConfiguracion && (
+        <div style={{
+          padding: '16px 20px',
+          background: 'linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%)',
+          borderBottom: '1px solid rgba(229, 231, 235, 0.8)'
+        }}>
+          <h4 style={{
+            margin: '0 0 12px 0',
+            fontSize: '16px',
+            fontWeight: '600',
+            color: '#374151'
+          }}>
+            ⚙️ Configuración
+          </h4>
+          
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+            gap: '12px'
+          }}>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px'
+            }}>
+              <input
+                type="checkbox"
+                id="guardarHistorial"
+                checked={configuracion.guardarHistorial}
+                onChange={(e) => setConfiguracion(prev => ({
+                  ...prev,
+                  guardarHistorial: e.target.checked
+                }))}
+                style={{ width: '16px', height: '16px' }}
+              />
+              <label htmlFor="guardarHistorial" style={{
+                fontSize: '14px',
+                color: '#374151',
+                cursor: 'pointer'
+              }}>
+                Guardar historial
+              </label>
+            </div>
+            
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px'
+            }}>
+              <input
+                type="checkbox"
+                id="mostrarEstadisticas"
+                checked={configuracion.mostrarEstadisticas}
+                onChange={(e) => setConfiguracion(prev => ({
+                  ...prev,
+                  mostrarEstadisticas: e.target.checked
+                }))}
+                style={{ width: '16px', height: '16px' }}
+              />
+              <label htmlFor="mostrarEstadisticas" style={{
+                fontSize: '14px',
+                color: '#374151',
+                cursor: 'pointer'
+              }}>
+                Mostrar estadísticas
+              </label>
+            </div>
+          </div>
+          
+          <div style={{
+            marginTop: '12px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px'
+          }}>
+            <label style={{
+              fontSize: '14px',
+              color: '#374151',
+              fontWeight: '500'
+            }}>
+              Tiempo de respuesta:
+            </label>
+            <input
+              type="range"
+              min="500"
+              max="3000"
+              step="100"
+              value={configuracion.tiempoRespuesta}
+              onChange={(e) => setConfiguracion(prev => ({
+                ...prev,
+                tiempoRespuesta: parseInt(e.target.value)
+              }))}
+              style={{ flex: '1' }}
+            />
+            <span style={{
+              fontSize: '12px',
+              color: '#6b7280',
+              minWidth: '40px'
+            }}>
+              {configuracion.tiempoRespuesta}ms
+            </span>
+          </div>
+        </div>
+      )}
+
+      {/* Estadísticas */}
+      {mostrarEstadisticas && estadisticas && (
+        <div style={{
+          padding: '0 20px',
+          background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)'
+        }}>
+          <EstadisticasCard
+            estadisticas={estadisticas}
+            onLimpiar={limpiarHistorial}
+            onExportar={exportarDatos}
+          />
+        </div>
+      )}
+
+      {/* Área de mensajes */}
       <div style={{
-        height: '350px',
-        overflowY: 'scroll',
-        padding: '15px',
-        background: '#2d3748',
+        height: mostrarEstadisticas && estadisticas ? '300px' : '400px',
+        overflowY: 'auto',
+        padding: '20px',
+        background: 'linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%)',
         scrollBehavior: 'smooth'
       }}>
-        {mensajes.map((m) => <ChatMessage key={m.id} mensaje={m} />)}
+        {mensajes.map((m, index) => (
+          <div key={m.id} className={m.usuario ? 'slide-out' : 'slide-in'} style={{ animationDelay: `${index * 0.1}s` }}>
+            <ChatMessage mensaje={m} />
+          </div>
+        ))}
+        
+        {isTyping && (
+          <div className="slide-in" style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            padding: '12px 16px',
+            backgroundColor: 'white',
+            borderRadius: '18px',
+            maxWidth: '85%',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+            border: '1px solid #e9ecef'
+          }}>
+            <div style={{ fontSize: '14px', color: '#666' }}>Analizando...</div>
+            <div style={{ display: 'flex', gap: '4px' }}>
+              <div style={{
+                width: '6px',
+                height: '6px',
+                borderRadius: '50%',
+                backgroundColor: '#667eea',
+                animation: 'pulse 1.4s ease-in-out infinite'
+              }} />
+              <div style={{
+                width: '6px',
+                height: '6px',
+                borderRadius: '50%',
+                backgroundColor: '#667eea',
+                animation: 'pulse 1.4s ease-in-out infinite 0.2s'
+              }} />
+              <div style={{
+                width: '6px',
+                height: '6px',
+                borderRadius: '50%',
+                backgroundColor: '#667eea',
+                animation: 'pulse 1.4s ease-in-out infinite 0.4s'
+              }} />
+            </div>
+          </div>
+        )}
+        
+        <div ref={messagesEndRef} />
       </div>
+
+      {/* Notificaciones de error */}
+      {errores.length > 0 && (
+        <div style={{
+          padding: '8px 20px',
+          background: 'linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%)',
+          borderTop: '1px solid rgba(239, 68, 68, 0.2)',
+          borderBottom: '1px solid rgba(239, 68, 68, 0.2)'
+        }}>
+          {errores.map(error => (
+            <div key={error.id} style={{
+              fontSize: '12px',
+              color: '#dc2626',
+              fontWeight: '500',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px'
+            }}>
+              ⚠️ {error.mensaje}
+            </div>
+          ))}
+        </div>
+      )}
 
       <InputArea
         inputTexto={inputTexto}
         setInputTexto={setInputTexto}
-        presionarEnter={presionarEnter}
+        presionarEnter={manejarTeclas}
         enviarMensaje={enviarMensaje}
+        isTyping={isTyping}
+        sugerencias={obtenerSugerencias(inputTexto)}
       />
     </div>
   );
