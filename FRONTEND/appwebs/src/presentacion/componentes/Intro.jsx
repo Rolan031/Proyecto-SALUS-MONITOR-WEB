@@ -202,7 +202,11 @@ const Schedule = () => {
       imagen: "/SalusIMG/2-. Design@3x no back.png"
     },
     {
+<<<<<<< HEAD
               nombre: "Jipson Gamboa",
+=======
+      nombre: "Jipson Gamboa",
+>>>>>>> 1e0f0a6bbda84cdf36b372c342d0471047de884c
       color: "from-purple-500 to-pink-500",
       imagen: "/SalusIMG/3-. Design@3x redimensionado no back.png"
     },

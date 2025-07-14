@@ -93,9 +93,13 @@ const Personaje = () => {
               textShadow: '0 0 10px rgba(255, 255, 255, 0.3), 0 0 20px rgba(255, 255, 255, 0.2)',
             }}
           >
+<<<<<<< HEAD
             Bienvenido a Salus Monitor, tu sistema de monitoreo de signos vitales en tiempo real. 
             Medimos y supervisamos pulsos cardíacos de manera precisa, con un chatbot inteligente 
             que te ayuda a interpretar los datos y responder tus consultas.
+=======
+            Salus Monitor es una plataforma innovadora para el monitoreo en tiempo real de signos vitales, diseñada para mejorar la atención y el seguimiento de pacientes mediante tecnología IoT. Facilita la toma de decisiones clínicas y ofrece herramientas intuitivas.
+>>>>>>> 1e0f0a6bbda84cdf36b372c342d0471047de884c
           </motion.p>
           <motion.div
             variants={slideUp(1.1)}
