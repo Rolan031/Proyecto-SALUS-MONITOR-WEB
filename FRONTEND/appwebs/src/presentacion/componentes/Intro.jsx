@@ -11,7 +11,7 @@ import imagenesp32_3 from "../../assets/imagenesp32-3.jpeg";
 import imagenesp32_4 from "../../assets/imagenesp32-4.jpeg";
 import imagenesp32_5 from "../../assets/imagenesp32-5.jpeg";
 import imagenesp32_6 from "../../assets/imagenesp32-6.jpeg";
-import imgFondoIntro from "../../assets/1._Design3x redimensionado no back.png";
+import imgFondoIntro from "../../assets/Logo.png";
 import {
   motion,
   useMotionTemplate,
@@ -73,7 +73,6 @@ const Hero = () => {
 const Esp32Decorativas = () => {
   // Array de imágenes y posiciones
   const decorativas = [
-    { src: imagenesp32_1, style: { top: '10%', left: '-5%', width: 120, rotate: -10 } },
     { src: imagenesp32_2, style: { top: '20%', right: '-6%', width: 110, rotate: 12 } },
     { src: imagenesp32_3, style: { bottom: '12%', left: '8%', width: 115, rotate: 8 } },
     { src: imagenesp32_4, style: { bottom: '10%', right: '10%', width: 130, rotate: -14 } },
@@ -105,8 +104,8 @@ const Esp32Decorativas = () => {
 
 const CenterImage = () => {
   const { scrollY } = useScroll();
-  const clip1 = useTransform(scrollY, [0, 1500], [25, 0]);
-  const clip2 = useTransform(scrollY, [0, 1500], [75, 100]);
+  const clip1 = useTransform(scrollY, [890, 0], [100, 0]); //Parametro de la animacion de img cenral izq
+  const clip2 = useTransform(scrollY, [890, 0], [0, 100]); //Parametro de la animacion de img cenral der
 
   const clipPath = useMotionTemplate`polygon(${clip1}% ${clip1}%, ${clip2}% ${clip1}%, ${clip2}% ${clip2}%, ${clip1}% ${clip2}%)`;
   const backgroundSize = 'contain';
@@ -202,11 +201,7 @@ const Schedule = () => {
       imagen: "/SalusIMG/2-. Design@3x no back.png"
     },
     {
-<<<<<<< HEAD
-              nombre: "Jipson Gamboa",
-=======
       nombre: "Jipson Gamboa",
->>>>>>> 1e0f0a6bbda84cdf36b372c342d0471047de884c
       color: "from-purple-500 to-pink-500",
       imagen: "/SalusIMG/3-. Design@3x redimensionado no back.png"
     },
@@ -218,7 +213,7 @@ const Schedule = () => {
     {
       nombre: "Rolando Avecillas",
       color: "from-yellow-500 to-orange-500",
-      imagen: "/SalusIMG/MsgRespuesta no back.jpg"
+      imagen: "/SalusIMG/2-. Design@3x no back.png"
     }
   ];
 

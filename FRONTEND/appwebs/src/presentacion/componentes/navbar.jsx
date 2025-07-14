@@ -90,32 +90,24 @@ const Navbar = () => {
           <ul className="flex sm:space-x-8 space-x-4">
             {navbarlinks.map((link) => (
               <li key={link.id}>
-<<<<<<< HEAD
-                <a
-                  className="sm:text-lg text-white font-bold tracking-wider hover:text-sky-200 transition-all duration-300 hover:scale-110 transform inline-block relative group"
-                  href={link.link}
-                >
-                  <span className="relative z-10">{link.title}</span>
-                  <span className="absolute inset-0 bg-gradient-to-r from-blue-400 to-cyan-400 opacity-0 group-hover:opacity-20 rounded-lg blur-sm transition-opacity duration-300"></span>
-                </a>
-=======
                 {link.title === 'Acerca de' ? (
                   <a
-                    className="sm:text-lg text sm hover:text-sky-100 transition-transform hover:scale-110 transform inline-block duration-300 font-poppins"
+                    className="sm:text-lg text-white font-bold tracking-wider hover:text-sky-200 transition-all duration-300 hover:scale-110 transform inline-block relative group"
                     href="#about"
                     onClick={handleAboutClick}
                   >
-                    {link.title}
+                    <span className="relative z-10">{link.title}</span>
+                    <span className="absolute inset-0 bg-gradient-to-r from-blue-400 to-cyan-400 opacity-0 group-hover:opacity-20 rounded-lg blur-sm transition-opacity duration-300"></span>
                   </a>
                 ) : (
                   <a
-                    className="sm:text-lg text sm hover:text-sky-100 transition-transform hover:scale-110 transform inline-block duration-300 font-poppins"
+                    className="sm:text-lg text-white font-bold tracking-wider hover:text-sky-200 transition-all duration-300 hover:scale-110 transform inline-block relative group"
                     href={link.link}
                   >
-                    {link.title}
+                    <span className="relative z-10">{link.title}</span>
+                    <span className="absolute inset-0 bg-gradient-to-r from-blue-400 to-cyan-400 opacity-0 group-hover:opacity-20 rounded-lg blur-sm transition-opacity duration-300"></span>
                   </a>
                 )}
->>>>>>> 1e0f0a6bbda84cdf36b372c342d0471047de884c
               </li>
             ))}
           </ul>
@@ -133,18 +125,9 @@ const Navbar = () => {
         <ul className="flex flex-col px-4 py-2">
           {navbarlinks.map((link) => (
             <li key={link.id} className="py-2 text-center">
-<<<<<<< HEAD
-              <a
-                className="text-white font-bold tracking-wider hover:text-sky-200 transition-all duration-300 hover:scale-105 transform inline-block"
-                href={link.link}
-                onClick={() => setIsOpen(false)}
-              >
-                {link.title}
-              </a>
-=======
               {link.title === 'Acerca de' ? (
                 <a
-                  className="hover:text-sky-200 font-poppins"
+                  className="text-white font-bold tracking-wider hover:text-sky-200 transition-all duration-300 hover:scale-105 transform inline-block"
                   href="#about"
                   onClick={handleAboutClick}
                 >
@@ -152,14 +135,13 @@ const Navbar = () => {
                 </a>
               ) : (
                 <a
-                  className="hover:text-sky-200 font-poppins"
+                  className="text-white font-bold tracking-wider hover:text-sky-200 transition-all duration-300 hover:scale-105 transform inline-block"
                   href={link.link}
                   onClick={() => setIsOpen(false)}
                 >
                   {link.title}
                 </a>
               )}
->>>>>>> 1e0f0a6bbda84cdf36b372c342d0471047de884c
             </li>
           ))}
         </ul>

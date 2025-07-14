@@ -42,7 +42,7 @@ function analizarPulso(pulso) {
 
 // Componente EstadoCard
 function EstadoCard({ estado, color, consejos }) {
-  // Paleta de colores moderna
+  // Paleta de colores 
   const palette = {
     green: { bg: '#e6fff3', text: '#0a4d2c', icon: '✅' },
     orange: { bg: '#fff7e6', text: '#a86a00', icon: '⚠️' },
@@ -148,11 +148,57 @@ function ChatMessage({ mensaje }) {
       </div>
     );
   }
-
-  // Si es un mensaje del bot (no del usuario), mostrar imagen pequeña a la izquierda
-  if (!mensaje.usuario) {
-    return (
-      <div style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '15px' }}>
+    // Si el número es mayor a 60 y menor o igual a 100
+    else if (mensaje.usuario && mensaje.usuario.numero > 60 && mensaje.usuario.numero <= 100) {
+      return (
+        <div style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '15px' }}>
+        <div style={{ minWidth: '85px', display: 'flex', justifyContent: 'center' }}>
+          <img
+            src="/public/SalusIMG/3.- Design3x redimensionado no back.png"
+            alt="Chatbot"
+            style={{
+              width: '85px',
+              height: '99px',
+              borderRadius: '100%',
+              marginRight: '10px',
+              border: 'none',
+              background: 'none',
+              objectFit: 'cover'
+            }}
+          />
+        </div>
+        <div style={{
+          padding: '12px 16px',
+          borderRadius: '18px 18px 18px 6px',
+          maxWidth: '85%',
+          backgroundColor: '#23283a',
+          color: '#fff',
+          boxShadow: '0 4px 12px #10151f33',
+          border: '1px solid #1aff8b22',
+          fontSize: '13px',
+          position: 'relative'
+        }}>
+          {mensaje.texto}
+          <span style={{
+            position: 'absolute',
+            left: '-12px',
+            top: '18px',
+            width: 0,
+            height: 0,
+            borderTop: '8px solid transparent',
+            borderBottom: '8px solid transparent',
+            borderRight: '12px solid #23283a'
+          }} />
+          {mensaje.estado && (
+            <EstadoCard estado={mensaje.estado} color={mensaje.color} consejos={mensaje.consejos} />
+          )}
+        </div>
+      </div>
+    );
+  }
+    else if (!mensaje.usuario < 60) {
+      return (
+        <div style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '15px' }}>
         <div style={{ minWidth: '85px', display: 'flex', justifyContent: 'center' }}>
           <img
             src={botImg}
@@ -197,7 +243,7 @@ function ChatMessage({ mensaje }) {
       </div>
     );
   }
-
+  // Si es un mensaje del bot (no del usuario), mostrar imagen pequeña a la izquierd
   // Mensaje del usuario (sin imagen)
   return (
     <div style={{ marginBottom: '15px' }}>
@@ -270,7 +316,7 @@ function InputArea({ inputTexto, setInputTexto, presionarEnter, enviarMensaje })
             e.currentTarget.style.boxShadow = '0 4px 16px #1aff8b55';
           }}
         >
-          <span style={{fontSize:'1.7em'}}>📤</span>
+          <span style={{ fontSize: '1.7em' }}>📤</span>
         </button>
       </div>
       <div style={{ textAlign: 'center', marginTop: '10px', fontSize: '12px', color: '#b6eada' }}>
@@ -377,7 +423,7 @@ const VitalMonitor = ({ patient }) => {
           </div>
         </div>
         <div className="flex flex-row items-center gap-2">
-          <span className={`w-3 h-3 rounded-full ${isMonitoring ? 'bg-[#1aff8b] animate-pulse' : 'bg-gray-400' }`}></span>
+          <span className={`w-3 h-3 rounded-full ${isMonitoring ? 'bg-[#1aff8b] animate-pulse' : 'bg-gray-400'}`}></span>
           <span className={`font-semibold text-base ${isMonitoring ? 'text-[#1aff8b]' : 'text-gray-400'}`}>{isMonitoring ? 'Monitoreando' : 'Detenido'}</span>
         </div>
       </div>
@@ -425,7 +471,7 @@ const VitalMonitor = ({ patient }) => {
         {/* Columna central: BPM grande */}
         <div className="flex flex-col items-center justify-center bg-[#23283a]/90 rounded-2xl shadow-2xl p-8 min-h-[260px]">
           <div className="text-8xl mb-2 animate-pulse">
-            <span role="img" aria-label="corazon" className="" style={{filter:'drop-shadow(0 2px 8px #1aff8b88)'}}>❤️</span>
+            <span role="img" aria-label="corazon" className="" style={{ filter: 'drop-shadow(0 2px 8px #1aff8b88)' }}>❤️</span>
           </div>
           <div className="text-6xl font-extrabold text-[#1aff8b] mb-1 tracking-wider">
             {latestVital ? latestVital.heartRate : '--'}
@@ -465,7 +511,7 @@ const VitalMonitor = ({ patient }) => {
       {!isChatOpen && (
         <button
           className="fixed bottom-6 right-6 z-50 w-16 h-16 rounded-full bg-[#1aff8b] shadow-2xl flex items-center justify-center hover:bg-[#13c77b] transition-all duration-200 border-4 border-[#23283a]"
-          style={{boxShadow:'0 4px 32px #1aff8b55'}}
+          style={{ boxShadow: '0 4px 32px #1aff8b55' }}
           title="Abrir chat bot"
           onClick={() => {
             setIsChatOpen(true);
@@ -474,7 +520,7 @@ const VitalMonitor = ({ patient }) => {
           }}
         >
           <img
-            src="/src/assets/1._Design3x redimensionado sinfondo.png"
+            src="/src/assets/4.- Design3x redimensionado no back.png"
             alt="Abrir chat bot"
             className="transition-transform duration-300 ease-in-out hover:scale-110 hover:shadow-2xl"
             style={{ width: '44px', height: '44px', borderRadius: '50%', border: '2px solid #10151f', background: 'none', objectFit: 'cover' }}
@@ -484,17 +530,17 @@ const VitalMonitor = ({ patient }) => {
 
       {/* Modal flotante de chat bot */}
       {isChatOpen && (
-        <div className="fixed bottom-8 right-8 z-50 flex flex-col items-end" style={{overflow: 'visible'}}>
+        <div className="fixed bottom-8 right-8 z-50 flex flex-col items-end" style={{ overflow: 'visible' }}>
           <div
             className="relative w-[420px] max-w-[98vw] bg-[#23283a]/95 backdrop-blur-2xl shadow-2xl rounded-2xl flex flex-col-reverse animate-fadeIn p-0"
-            style={{boxShadow:'0 8px 40px #10151f88', overflow: 'visible'}}
+            style={{ boxShadow: '0 8px 40px #10151f88', overflow: 'visible' }}
           >
             {/* Header del chat */}
             <div className="flex items-center justify-between px-6 py-4 bg-[#23283a]/95 rounded-t-2xl">
               <div className="flex items-center gap-2">
                 {/* Imagen pequeña del bot en el header */}
                 <img
-                  src="/src/assets/1._Design3x redimensionado sinfondo.png"
+                  src="/public/SalusIMG/3.- Design3x redimensionado no back.png"
                   alt="Chatbot"
                   style={{ width: '28px', height: '28px', borderRadius: '50%', border: '2px solid #1aff8b', background: 'none' }}
                 />
@@ -539,11 +585,10 @@ const VitalMonitor = ({ patient }) => {
             initial={{ opacity: 0, y: -50, scale: 0.8 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -50, scale: 0.8 }}
-            className={`fixed top-6 right-6 z-50 px-6 py-4 rounded-2xl shadow-2xl flex items-center backdrop-blur-xl border ${
-              notification.type === 'error' ? 'bg-red-600/80 text-white border-red-500/50' :
+            className={`fixed top-6 right-6 z-50 px-6 py-4 rounded-2xl shadow-2xl flex items-center backdrop-blur-xl border ${notification.type === 'error' ? 'bg-red-600/80 text-white border-red-500/50' :
               notification.type === 'success' ? 'bg-emerald-600/80 text-white border-emerald-500/50' :
-              'bg-blue-600/80 text-white border-blue-500/50'
-            }`}
+                'bg-blue-600/80 text-white border-blue-500/50'
+              }`}
           >
             <div className="text-2xl mr-3">
               {notification.type === 'error' ? '❌' : notification.type === 'success' ? '✅' : 'ℹ️'}
@@ -626,7 +671,7 @@ function ChatBotPanel({ patient }) {
   }, [mensajes]);
   return (
     <div className="flex-1 flex flex-col bg-[#23283a]/80">
-      <div id="chat-messages-panel" style={{height:'340px',overflowY:'auto',padding:'18px',background:'#23283a'}}>
+      <div id="chat-messages-panel" style={{ height: '340px', overflowY: 'auto', padding: '18px', background: '#23283a' }}>
         {mensajes.map((m) => <ChatMessage key={m.id} mensaje={m} />)}
       </div>
       <InputArea
@@ -644,7 +689,7 @@ const ParticleBackgroundSVG = memo(() => (
   <div className="absolute inset-0 z-0 pointer-events-none">
     <svg width="100%" height="100%" className="absolute inset-0" style={{ opacity: 0.18 }}>
       {[...Array(80)].map((_, i) => (
-        <circle key={i} cx={Math.random()*100+'%'} cy={Math.random()*100+'%'} r={Math.random()*2+1} fill="#1aff8b" />
+        <circle key={i} cx={Math.random() * 100 + '%'} cy={Math.random() * 100 + '%'} r={Math.random() * 2 + 1} fill="#1aff8b" />
       ))}
     </svg>
   </div>
