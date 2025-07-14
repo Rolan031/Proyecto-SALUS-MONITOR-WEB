@@ -5,12 +5,12 @@ import imagen1 from "../../assets/imagen1.jpeg";
 import imagen2 from "../../assets/imagen2.jpeg";
 import imagen3 from "../../assets/imagen3.jpeg";
 import imagen4 from "../../assets/imagen4.jpeg";
-import imagenesp32_1 from "../../assets/imagenesp32-1.jpeg";
-import imagenesp32_2 from "../../assets/imagenesp32-2.jpeg";
-import imagenesp32_3 from "../../assets/imagenesp32-3.jpeg";
-import imagenesp32_4 from "../../assets/imagenesp32-4.jpeg";
-import imagenesp32_5 from "../../assets/imagenesp32-5.jpeg";
-import imagenesp32_6 from "../../assets/imagenesp32-6.jpeg";
+import imagenesp32_1 from "../../assets/1._Design3x redimensionado no back.png";
+import imagenesp32_2 from "../../assets/3.- Design3x redimensionado no back.png";
+import imagenesp32_3 from "../../assets/imagenrobot3.png";
+import imagenesp32_4 from "../../assets/4.- Design3x redimensionado no back.png";
+import imagenesp32_5 from "../../assets/3.- Design3x redimensionado no back.png";
+import imagenesp32_6 from "../../assets/3.- Design3x redimensionado no back.png";
 import imgFondoIntro from "../../assets/Logo.png";
 import {
   motion,
@@ -73,10 +73,10 @@ const Hero = () => {
 const Esp32Decorativas = () => {
   // Array de imágenes y posiciones
   const decorativas = [
-    { src: imagenesp32_2, style: { top: '20%', right: '-6%', width: 110, rotate: 12 } },
+    { src: imagenesp32_2, style: { top: '20%', right: '-6%', width: 80, rotate: 12 } },
     { src: imagenesp32_3, style: { bottom: '12%', left: '8%', width: 115, rotate: 8 } },
     { src: imagenesp32_4, style: { bottom: '10%', right: '10%', width: 130, rotate: -14 } },
-    { src: imagenesp32_5, style: { top: '55%', left: '-4%', width: 110, rotate: 6 } },
+    { src: imagenesp32_5, style: { top: '55%', left: '0%', width: 210, rotate: 6 } },
     { src: imagenesp32_6, style: { bottom: '5%', left: '40%', width: 125, rotate: 0 } },
   ];
   return (
@@ -138,29 +138,23 @@ const ParallaxImages = () => {
         alt="imagen 1"
         start={-200}
         end={200}
-        className="w-1/3"
+        className="w-1/4"
       />
       <ParallaxImg
         src={imagenesp32_2}
         alt="imagen2"
         start={200}
         end={-250}
-        className="mx-auto w-2/3"
+        className="mx-auto w-1/4"
       />
       <ParallaxImg
         src={imagenesp32_3}
         alt="imagen3"
         start={-200}
         end={200}
-        className="ml-auto w-1/3"
+        className="ml-auto w-1/8"
       />
-      <ParallaxImg
-        src={imagenesp32_6}
-        alt="img4"
-        start={0}
-        end={-500}
-        className="ml-24 w-4/12"
-      />
+
     </div>
   );
 };

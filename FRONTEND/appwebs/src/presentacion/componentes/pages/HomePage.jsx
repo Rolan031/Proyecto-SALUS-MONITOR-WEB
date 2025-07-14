@@ -5,7 +5,7 @@ import Navbar from '../navbar';
 import Personaje from '../Personaje';
 import ThreeCards from '../Card';
 import ScrollDots from '../ScrollDots';
-import FONDO from '../../../assets/Fondo.png'; 
+import FONDO from '../../../assets/fondo2.png'; 
 import TeamAvatars from '../TeamAvatars';
 import TechIcons from '../TechIcons';
 import { FaUsers } from 'react-icons/fa';
